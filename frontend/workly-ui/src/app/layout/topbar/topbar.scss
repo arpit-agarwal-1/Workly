@@ -148,3 +148,29 @@
   margin-left: 6px;
   color: #718096;
 }
+
+/* Mobile hamburger (visible only on small screens) */
+.hamburger {
+  display: none;
+  margin-right: 12px;
+
+  width: 40px;
+  height: 40px;
+
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #526174;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .search {
+    display: none;
+  }
+
+  .hamburger {
+    display: inline-grid;
+    place-items: center;
+  }
+}

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MobileMenuService } from '../../services/mobile-menu.service';
 import {
   LucideSearch,
   LucideBell,
   LucideChevronDown,
+  LucideMenu,
 } from '@lucide/angular';
 
 @Component({
@@ -11,8 +13,11 @@ import {
     LucideSearch,
     LucideBell,
     LucideChevronDown,
+    LucideMenu,
   ],
   templateUrl: './topbar.html',
   styleUrl: './topbar.scss',
 })
-export class Topbar {}
+export class Topbar {
+  readonly menu = inject(MobileMenuService);
+}
