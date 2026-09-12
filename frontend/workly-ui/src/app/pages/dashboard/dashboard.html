@@ -1,0 +1,209 @@
+<section class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <h1>Good morning, Arpit 👋</h1>
+      <p>Monday, September 12, 2026</p>
+    </div>
+
+    <div class="dashboard-quote">
+      <span>
+        “Great things are done by a series of small things brought together.”
+      </span>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon projects">
+          <svg
+            lucideFolderKanban
+            [size]="20"
+            [strokeWidth]="1.8"
+          ></svg>
+        </div>
+      </div>
+
+      <div class="stat-content">
+        <span class="stat-label">Total Projects</span>
+        <strong class="stat-value">12</strong>
+        <span class="stat-description">Active projects</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon tasks">
+          <svg
+            lucideListTodo
+            [size]="20"
+            [strokeWidth]="1.8"
+          ></svg>
+        </div>
+      </div>
+
+      <div class="stat-content">
+        <span class="stat-label">Open Tasks</span>
+        <strong class="stat-value">48</strong>
+        <span class="stat-description">Tasks currently open</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon overdue">
+          <svg
+            lucideTriangleAlert
+            [size]="20"
+            [strokeWidth]="1.8"
+          ></svg>
+        </div>
+      </div>
+
+      <div class="stat-content">
+        <span class="stat-label">Overdue Tasks</span>
+        <strong class="stat-value">5</strong>
+        <span class="stat-description">Needs attention</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-card-top">
+        <div class="stat-icon members">
+          <svg
+            lucideUsers
+            [size]="20"
+            [strokeWidth]="1.8"
+          ></svg>
+        </div>
+      </div>
+
+      <div class="stat-content">
+        <span class="stat-label">Team Members</span>
+        <strong class="stat-value">8</strong>
+        <span class="stat-description">Active members</span>
+      </div>
+    </article>
+  </section>
+
+    <section class="dashboard-main-grid">
+    <article class="dashboard-card project-progress-card">
+      <div class="card-header">
+        <div>
+          <h2>Project Progress</h2>
+          <p>Track progress across your active projects</p>
+        </div>
+
+        <button class="card-action" type="button" aria-label="More project options">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+      <div class="project-list">
+        <div class="project-item">
+          <div class="project-info">
+            <span class="project-name">Website Redesign</span>
+            <span class="project-percentage">72%</span>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill website" style="width: 72%"></div>
+          </div>
+        </div>
+
+        <div class="project-item">
+          <div class="project-info">
+            <span class="project-name">Mobile App</span>
+            <span class="project-percentage">45%</span>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill mobile" style="width: 45%"></div>
+          </div>
+        </div>
+
+        <div class="project-item">
+          <div class="project-info">
+            <span class="project-name">Internal Tools</span>
+            <span class="project-percentage">28%</span>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill internal" style="width: 28%"></div>
+          </div>
+        </div>
+
+        <div class="project-item">
+          <div class="project-info">
+            <span class="project-name">Marketing Campaign</span>
+            <span class="project-percentage">90%</span>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-fill marketing" style="width: 90%"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="dashboard-card task-status-card">
+      <div class="card-header">
+        <div>
+          <h2>Tasks by Status</h2>
+          <p>Current task distribution</p>
+        </div>
+
+        <button class="card-action" type="button" aria-label="More task options">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+      <div class="task-status-content">
+        <div class="donut-chart">
+          <div class="donut-center">
+            <strong>48</strong>
+            <span>Total Tasks</span>
+          </div>
+        </div>
+
+        <div class="status-list">
+          <div class="status-item">
+            <span class="status-label">
+              <i class="status-dot todo"></i>
+              To Do
+            </span>
+            <strong>24</strong>
+          </div>
+
+          <div class="status-item">
+            <span class="status-label">
+              <i class="status-dot progress"></i>
+              In Progress
+            </span>
+            <strong>12</strong>
+          </div>
+
+          <div class="status-item">
+            <span class="status-label">
+              <i class="status-dot review"></i>
+              In Review
+            </span>
+            <strong>7</strong>
+          </div>
+
+          <div class="status-item">
+            <span class="status-label">
+              <i class="status-dot completed"></i>
+              Completed
+            </span>
+            <strong>5</strong>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</section>

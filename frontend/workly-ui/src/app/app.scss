@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: #f7f9fc;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+}
+
+.page-content {
+  padding: 28px;
+}
