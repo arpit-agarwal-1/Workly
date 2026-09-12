@@ -1,11 +1,15 @@
-<div class="app-shell">
-  <app-sidebar />
+@if (isDashboardRoute) {
+  <div class="app-shell">
+    <app-sidebar />
 
-  <main class="main-content">
-    <app-topbar />
+    <main class="main-content">
+      <app-topbar />
 
-    <section class="page-content">
-      <router-outlet />
-    </section>
-  </main>
-</div>
+      <section class="page-content">
+        <router-outlet />
+      </section>
+    </main>
+  </div>
+} @else {
+  <router-outlet />
+}

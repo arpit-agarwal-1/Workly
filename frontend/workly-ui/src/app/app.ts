@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { Topbar } from './layout/topbar/topbar';
 
@@ -11,4 +11,10 @@ import { Topbar } from './layout/topbar/topbar';
 })
 export class App {
   protected readonly title = signal('workly-ui');
+
+  constructor(private readonly router: Router) {}
+
+  protected get isDashboardRoute(): boolean {
+    return this.router.url === '/dashboard';
+  }
 }
