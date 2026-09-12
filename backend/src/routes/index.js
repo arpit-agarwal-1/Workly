@@ -1,23 +1,14 @@
 const express = require('express');
-const mongoose = require('mongoose');
+
+const { getHealthStatus } = require('../services/healthService');
+const v1Router = require('./v1');
 
 const router = express.Router();
 
 router.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Workly API is running',
-  });
+  res.status(200).json(getHealthStatus());
 });
 
-router.get('/health/ready', (req, res) => {
-  const isReady = mongoose.connection.readyState === 1;
-
-  res.status(isReady ? 200 : 503).json({
-    status: isReady ? 'success' : 'error',
-    message: isReady ? 'MongoDB connected' : 'MongoDB not connected',
-    ready: isReady,
-  });
-});
+router.use('/v1', v1Router);
 
 module.exports = router;
