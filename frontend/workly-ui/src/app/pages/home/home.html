@@ -1,0 +1,409 @@
+<div class="home-page">
+  <header class="marketing-header">
+    <div class="container nav-shell">
+      <a class="brand" routerLink="/" aria-label="Workly home page">
+        <span class="brand-mark">W</span>
+        <span class="brand-text">Workly</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        @for (item of navItems; track item) {
+          <a href="#" class="nav-item">{{ item }}</a>
+        }
+      </nav>
+
+      <div class="nav-actions">
+        <a class="signin-link" routerLink="/login">Sign In</a>
+        <a class="primary-button nav-cta" routerLink="/signup">Get Started</a>
+      </div>
+
+      <button class="mobile-menu-button" type="button" aria-label="Toggle menu" (click)="toggleMenu()">
+        @if (mobileMenuOpen()) {
+          <svg lucideX [size]="20" [strokeWidth]="1.8"></svg>
+        } @else {
+          <svg lucideMenu [size]="20" [strokeWidth]="1.8"></svg>
+        }
+      </button>
+    </div>
+
+    @if (mobileMenuOpen()) {
+      <div class="mobile-menu">
+        <nav class="mobile-nav" aria-label="Mobile navigation">
+          @for (item of navItems; track item) {
+            <a href="#" class="mobile-nav-item">{{ item }}</a>
+          }
+        </nav>
+        <div class="mobile-actions">
+          <a class="signin-link" routerLink="/login">Sign In</a>
+          <a class="primary-button" routerLink="/signup">Get Started</a>
+        </div>
+      </div>
+    }
+  </header>
+
+  <main>
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">BUILT FOR MODERN TEAMS</p>
+
+          <h1>
+            Work better.<br />
+            <span>Together.</span>
+          </h1>
+
+          <p class="hero-text">
+            Workly helps teams plan, organize and deliver their best work — all in one place.
+            From projects and tasks to team collaboration and insights, everything you need to move forward.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-button" routerLink="/signup">Get Started <svg lucideArrowRight [size]="18" [strokeWidth]="2.2"></svg></a>
+            <a class="secondary-button" routerLink="/login">
+              <span class="play-icon"><svg lucideCirclePlay [size]="18" [strokeWidth]="2"></svg></span>
+              Watch Demo
+            </a>
+          </div>
+
+          <div class="trust-row">
+            @for (item of trustItems; track item) {
+              <span class="trust-item">
+                <svg lucideCheck [size]="13" [strokeWidth]="2.4"></svg>
+                {{ item }}
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Workly dashboard preview">
+          <div class="dashboard-mockup">
+            <aside class="mock-sidebar">
+              <div class="sidebar-brand">
+                <span class="mini-mark">W</span>
+                <span>Workly</span>
+              </div>
+
+              <nav class="mock-nav">
+                <span class="mock-nav-item active"><svg lucideBriefcase [size]="14" [strokeWidth]="1.8"></svg></span>
+                <span class="mock-nav-item"><svg lucideFolderKanban [size]="14" [strokeWidth]="1.8"></svg></span>
+                <span class="mock-nav-item"><svg lucideMessageSquareText [size]="14" [strokeWidth]="1.8"></svg></span>
+                <span class="mock-nav-item"><svg lucideCalendarDays [size]="14" [strokeWidth]="1.8"></svg></span>
+                <span class="mock-nav-item"><svg lucideUsers [size]="14" [strokeWidth]="1.8"></svg></span>
+                <span class="mock-nav-item"><svg lucideBarChart3 [size]="14" [strokeWidth]="1.8"></svg></span>
+              </nav>
+            </aside>
+
+            <div class="mock-main">
+              <div class="mock-topbar">
+                <div class="mock-search">Search projects, tasks, or people...</div>
+                <div class="mock-controls">
+                  <span>Ctrl K</span>
+                </div>
+              </div>
+
+              <div class="mock-header-row">
+                <div>
+                  <h3>Good morning, Arpit</h3>
+                  <p>Mon, Mar 25, 2024</p>
+                </div>
+                <div class="avatar-stack">
+                  <span class="avatar avatar-one">A</span>
+                </div>
+              </div>
+
+              <div class="stat-cards">
+                <div class="stat-card">
+                  <span class="stat-label">Projects</span>
+                  <strong>12</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Active</span>
+                  <strong>28</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Tasks</span>
+                  <strong>8</strong>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Tickets</span>
+                  <strong>92%</strong>
+                </div>
+              </div>
+
+              <div class="mock-content-grid">
+                <div class="content-card main-card">
+                  <div class="card-header-line">
+                    <span>Project Progress</span>
+                    <span class="pill-outline">See all</span>
+                  </div>
+                  <div class="bars">
+                    <div class="bar-row"><span>Design</span><div class="bar"><i style="width: 72%"></i></div></div>
+                    <div class="bar-row"><span>Build</span><div class="bar"><i style="width: 48%"></i></div></div>
+                    <div class="bar-row"><span>Launch</span><div class="bar"><i style="width: 88%"></i></div></div>
+                  </div>
+                </div>
+
+                <div class="content-card activity-card">
+                  <div class="card-header-line">
+                    <span>Recent Activity</span>
+                    <span class="pill-outline">View</span>
+                  </div>
+                  <div class="activity-list">
+                    <div class="activity-item">
+                      <span class="dot blue"></span>
+                      <div>
+                        <strong>Priya Sharma</strong>
+                        <small>uploaded a new file</small>
+                      </div>
+                    </div>
+                    <div class="activity-item">
+                      <span class="dot green"></span>
+                      <div>
+                        <strong>Rahul</strong>
+                        <small>commented on the design</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="logo-strip">
+      <div class="container brands-row">
+        @for (brand of brands; track brand) {
+          <div class="brand-logo">{{ brand }}</div>
+        }
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <div class="section-heading centered">
+          <p class="eyebrow subtle">EVERYTHING YOUR TEAM NEEDS</p>
+          <h2>Powerful features for modern teams</h2>
+          <p>From planning to delivery, Workly gives you the tools to stay organized, aligned and productive.</p>
+        </div>
+
+        <div class="features-grid">
+          @for (card of featureCards; track card.title) {
+            <article class="feature-card">
+              <div class="feature-icon {{ card.tone }}">
+                @switch (card.icon) {
+                  @case ('project') { <svg lucideFolderKanban [size]="22" [strokeWidth]="1.8"></svg> }
+                  @case ('task') { <svg lucideMessageSquareText [size]="22" [strokeWidth]="1.8"></svg> }
+                  @case ('team') { <svg lucideUsers [size]="22" [strokeWidth]="1.8"></svg> }
+                  @case ('calendar') { <svg lucideCalendarDays [size]="22" [strokeWidth]="1.8"></svg> }
+                  @case ('analytics') { <svg lucideBarChart3 [size]="22" [strokeWidth]="1.8"></svg> }
+                }
+              </div>
+              <h3>{{ card.title }}</h3>
+              <p>{{ card.description }}</p>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="steps-section">
+      <div class="container">
+        <div class="section-heading centered">
+          <p class="eyebrow subtle">HOW WORKLY WORKS</p>
+          <h2>From idea to impact</h2>
+          <p>A simple, powerful process to help your team achieve more.</p>
+        </div>
+
+        <div class="steps-grid">
+          @for (step of steps; track step.title; let index = $index) {
+            <div class="step-item">
+              <div class="step-connector" aria-hidden="true"></div>
+              <div class="step-badge {{ step.tone }}">
+                @switch (step.icon) {
+                  @case ('plan') { <svg lucideBriefcase [size]="18" [strokeWidth]="2"></svg> }
+                  @case ('organize') { <svg lucideSparkles [size]="18" [strokeWidth]="2"></svg> }
+                  @case ('collaborate') { <svg lucideUsers [size]="18" [strokeWidth]="2"></svg> }
+                  @case ('deliver') { <svg lucideBarChart3 [size]="18" [strokeWidth]="2"></svg> }
+                }
+              </div>
+              <div class="step-copy">
+                <span class="step-number">{{ index + 1 }}</span>
+                <h3>{{ step.title }}</h3>
+                <p>{{ step.description }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow-section">
+      <div class="container workflow-grid">
+        <div class="task-panel">
+          <div class="task-header">
+            <span>My Tasks</span>
+            <a href="#">View all</a>
+          </div>
+
+          <div class="task-list">
+            <div class="task-row">
+              <span class="checkbox"></span>
+              <span class="task-name">Design landing page</span>
+              <span class="priority high">High</span>
+              <span class="task-date">Today</span>
+            </div>
+            <div class="task-row">
+              <span class="checkbox"></span>
+              <span class="task-name">Build API endpoints</span>
+              <span class="priority medium">Medium</span>
+              <span class="task-date">Apr 12</span>
+            </div>
+            <div class="task-row">
+              <span class="checkbox"></span>
+              <span class="task-name">User testing & feedback</span>
+              <span class="priority low">Low</span>
+              <span class="task-date">Apr 15</span>
+            </div>
+            <div class="task-row">
+              <span class="checkbox"></span>
+              <span class="task-name">Marketing presentation</span>
+              <span class="priority medium">Medium</span>
+              <span class="task-date">Apr 18</span>
+            </div>
+          </div>
+
+          <div class="task-footer">
+            <span>Stay organized</span>
+            <span>Achieve more</span>
+            <span>Together.</span>
+          </div>
+        </div>
+
+        <div class="workflow-copy">
+          <h2>A better way to work</h2>
+          <p>
+            Workly brings projects, people and progress together in one intuitive platform.
+            Spend less time juggling tools and more time doing meaningful work.
+          </p>
+
+          <ul class="check-list">
+            @for (item of checklist; track item) {
+              <li>
+                <span class="checkmark"><svg lucideCheck [size]="15" [strokeWidth]="2.5"></svg></span>
+                {{ item }}
+              </li>
+            }
+          </ul>
+
+          <a class="primary-button" routerLink="/signup">Get Started</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials-section">
+      <div class="container">
+        <div class="section-heading centered">
+          <p class="eyebrow subtle">WHAT OUR CUSTOMERS SAY</p>
+          <h2>Loved by teams everywhere</h2>
+        </div>
+
+        <div class="testimonial-grid">
+          @for (item of testimonials; track item.name) {
+            <article class="testimonial-card">
+              <div class="quote-mark"><svg lucideQuote [size]="18" [strokeWidth]="2"></svg></div>
+              <p>“{{ item.quote }}”</p>
+              <div class="person-row">
+                <span class="person-avatar">{{ item.initials }}</span>
+                <div>
+                  <strong>{{ item.name }}</strong>
+                  <small>{{ item.role }}</small>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing-section">
+      <div class="container">
+        <div class="section-heading centered">
+          <p class="eyebrow subtle">SIMPLE, TRANSPARENT PRICING</p>
+          <h2>Choose the plan that fits your team</h2>
+        </div>
+
+        <div class="pricing-grid">
+          @for (plan of pricingPlans; track plan.name) {
+            <article class="price-card {{ plan.featured ? 'featured' : '' }}">
+              @if (plan.featured) {
+                <span class="popular-badge">Most Popular</span>
+              }
+              <h3>{{ plan.name }}</h3>
+              <p class="plan-description">{{ plan.description }}</p>
+              <div class="price-row"><span class="currency">$</span>{{ plan.price }} <span class="interval">{{ plan.interval }}</span></div>
+              <ul>
+                @for (feature of plan.features; track feature) {
+                  <li><svg lucideCheck [size]="15" [strokeWidth]="2.5"></svg>{{ feature }}</li>
+                }
+              </ul>
+              <a class="primary-button plan-button" routerLink="/signup">{{ plan.cta }}</a>
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container cta-banner">
+        <div>
+          <h2>Ready to get more done together?</h2>
+          <p>Join thousands of teams already using Workly to build amazing things.</p>
+        </div>
+        <a class="primary-button cta-button" routerLink="/signup">Get Started <svg lucideArrowRight [size]="18" [strokeWidth]="2.2"></svg></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand-block">
+        <div class="brand footer-logo">
+          <span class="brand-mark">W</span>
+          <span class="brand-text">Workly</span>
+        </div>
+        <p>Better. Together.</p>
+        <div class="social-row">
+          <a href="#" aria-label="Workly on X"><svg lucideGlobe [size]="16" [strokeWidth]="2"></svg></a>
+          <a href="#" aria-label="Workly on LinkedIn"><svg lucideGlobe [size]="16" [strokeWidth]="2"></svg></a>
+          <a href="#" aria-label="Workly on GitHub"><svg lucideGlobe [size]="16" [strokeWidth]="2"></svg></a>
+        </div>
+      </div>
+
+      @for (column of footerColumns; track column.title) {
+        <div class="footer-column">
+          <h3>{{ column.title }}</h3>
+          <ul>
+            @for (item of column.items; track item) {
+              <li><a href="#">{{ item }}</a></li>
+            }
+          </ul>
+        </div>
+      }
+
+      <div class="newsletter-block">
+        <h3>Subscribe to our newsletter</h3>
+        <div class="newsletter-form">
+          <input type="email" placeholder="Enter your email" aria-label="Email address" />
+          <button type="button">Subscribe</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© 2024 Workly. All rights reserved.</span>
+      <span>Made with ❤ by Team Workly.</span>
+    </div>
+  </footer>
+</div>
