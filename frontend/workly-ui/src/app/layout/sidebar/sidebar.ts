@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { MobileMenuService } from '../../services/mobile-menu.service';
 import {
   LucideLayoutDashboard,
   LucideFolderKanban,
@@ -7,6 +8,7 @@ import {
   LucideUsers,
   LucideChartNoAxesCombined,
   LucideSettings,
+  LucideX,
 } from '@lucide/angular';
 
 @Component({
@@ -19,8 +21,11 @@ import {
     LucideUsers,
     LucideChartNoAxesCombined,
     LucideSettings,
+    LucideX,
   ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
-export class Sidebar {}
+export class Sidebar {
+  readonly menu = inject(MobileMenuService);
+}

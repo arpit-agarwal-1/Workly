@@ -1,50 +1,59 @@
-<aside class="sidebar">
-  <div class="brand">
-    <div class="brand-mark">W</div>
-    <span>Workly</span>
-  </div>
+<div class="mobile-sidebar-root">
+  @if (menu.isOpen()) {
+  <div class="mobile-overlay" (click)="menu.close()"></div>
+  }
 
-  <nav class="navigation">
-    <a class="nav-item active">
-      <svg lucideLayoutDashboard [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Dashboard</span>
-    </a>
-
-    <a class="nav-item">
-      <svg lucideFolderKanban [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Projects</span>
-    </a>
-
-    <a class="nav-item">
-      <svg lucideListChecks [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Tasks</span>
-    </a>
-
-    <a class="nav-item">
-      <svg lucideCalendarDays [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Calendar</span>
-    </a>
-
-    <a class="nav-item">
-      <svg lucideUsers [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Team</span>
-    </a>
-
-    <a class="nav-item">
-      <svg lucideChartNoAxesCombined [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Reports</span>
-    </a>
-  </nav>
-
-  <div class="sidebar-bottom">
-    <a class="nav-item">
-      <svg lucideSettings [size]="20" [strokeWidth]="1.8"></svg>
-      <span>Settings</span>
-    </a>
-
-    <div class="sidebar-promo">
-      <strong>Get more done<br />together</strong>
-      <span>Organize. Track. Grow.</span>
+  <aside class="sidebar" [class.mobile-open]="menu.isOpen()">
+    <div class="brand">
+      <button class="mobile-close" aria-label="Close menu" (click)="menu.close()">
+        <svg lucideX [size]="18" [strokeWidth]="1.8"></svg>
+      </button>
+      <div class="brand-mark">W</div>
+      <span>Workly</span>
     </div>
-  </div>
-</aside>
+
+    <nav class="navigation">
+      <a class="nav-item active" (click)="menu.close()">
+        <svg lucideLayoutDashboard [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Dashboard</span>
+      </a>
+
+      <a class="nav-item" (click)="menu.close()">
+        <svg lucideFolderKanban [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Projects</span>
+      </a>
+
+      <a class="nav-item" (click)="menu.close()">
+        <svg lucideListChecks [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Tasks</span>
+      </a>
+
+      <a class="nav-item" (click)="menu.close()">
+        <svg lucideCalendarDays [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Calendar</span>
+      </a>
+
+      <a class="nav-item" (click)="menu.close()">
+        <svg lucideUsers [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Team</span>
+      </a>
+
+      <a class="nav-item" (click)="menu.close()">
+        <svg lucideChartNoAxesCombined [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Reports</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a class="nav-item" (click)="menu.close()">
+        <svg lucideSettings [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Settings</span>
+      </a>
+
+      <div class="sidebar-promo">
+        <strong>Get more done<br />together</strong>
+        <span>Organize. Track. Grow.</span>
+      </div>
+    </div>
+  </aside>
+</div>
