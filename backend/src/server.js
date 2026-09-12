@@ -1,21 +1,31 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
+const dotenv = require('dotenv');
+const http = require('http');
 
-const app = express();
+const app = require('./app');
+const connectDB = require('./config/db');
 
-app.use(cors());
-app.use(express.json());
+dotenv.config();
 
-app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "Workly API is running",
-  });
-});
+const PORT = Number(process.env.PORT) || 3000;
 
-const PORT = process.env.PORT || 3000;
+const startServer = async () => {
+  try {
+    await connectDB();
 
-app.listen(PORT, () => {
-  console.log(`Workly API running on port ${PORT}`);
-});
+    const server = http.createServer(app);
+
+    server.listen(PORT, () => {
+      console.log(`Workly API running on port ${PORT}`);
+    });
+
+    server.on('error', (error) => {
+      console.error('Server failed to start:', error.message);
+      process.exit(1);
+    });
+  } catch (error) {
+    console.error('Startup failed:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
