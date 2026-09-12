@@ -75,7 +75,9 @@ test('wrong secret causes verification failure', () => {
 
 test('tampered token fails verification', () => {
   const token = signAccessToken({ userId: 'user_123', sessionId: 'session_123' });
-  const tampered = `${token.slice(0, -1)}A`;
+  const tampered = token.endsWith('A')
+    ? `${token.slice(0, -1)}B`
+    : `${token.slice(0, -1)}A`;
 
   assert.throws(() => verifyAccessToken(tampered), /Invalid or expired access token/i);
 });
