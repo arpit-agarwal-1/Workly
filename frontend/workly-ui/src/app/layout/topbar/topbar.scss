@@ -1,0 +1,150 @@
+:host {
+  display: block;
+}
+
+.topbar {
+  height: 72px;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e8edf4;
+  background: #ffffff;
+}
+
+.search {
+  width: 560px;
+  height: 42px;
+  padding: 0 10px 0 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 10px;
+  background: #f4f7fb;
+  color: #718096;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+    background: transparent;
+
+    font: inherit;
+    color: #1a202c;
+
+    &::placeholder {
+      color: #8a96a8;
+    }
+  }
+}
+
+.shortcut {
+  flex-shrink: 0;
+
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  background: #e7edf5;
+  color: #718096;
+
+  font-size: 11px;
+  line-height: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.notification {
+  position: relative;
+
+  width: 38px;
+  height: 38px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+
+  color: #526174;
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #f4f7fb;
+  }
+
+  span {
+    position: absolute;
+    top: 1px;
+    right: 0;
+
+    width: 17px;
+    height: 17px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    background: #e05252;
+
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+  background: #dbeafe;
+
+  color: #315db8;
+  font-weight: 700;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    color: #1a202c;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  small {
+    color: #718096;
+    font-size: 11px;
+  }
+}
+
+.chevron {
+  margin-left: 6px;
+  color: #718096;
+}
