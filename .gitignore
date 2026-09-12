@@ -1,4 +1,14 @@
+# Dependencies
 node_modules/
+
+# Environment files
 .env
 .env.*
 !.env.example
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
