@@ -12,7 +12,9 @@ const getTestMongoUri = () => {
 
 const connectTestDb = async (mongoose) => {
   const mongoUri = getTestMongoUri();
-  await mongoose.connect(mongoUri);
+  await mongoose.connect(mongoUri, {
+    serverSelectionTimeoutMS: 15000,
+  });
 };
 
 const clearCollections = async (models) => {

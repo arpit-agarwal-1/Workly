@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node -e \"process.env.TEST_MONGODB_URI = process.env.TEST_MONGODB_URI || 'mongodb://127.0.0.1:27017/workly-test'; const { spawnSync } = require('node:child_process'); const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', 'tests'], { stdio: 'inherit', env: process.env }); process.exit(result.status ?? 1);\""
+    "test": "node -e \"const { spawnSync } = require('node:child_process'); const env = { ...process.env, TEST_MONGODB_URI: process.env.TEST_MONGODB_URI || process.env.MONGODB_URI }; const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', 'tests'], { stdio: 'inherit', env }); process.exit(result.status ?? 1);\""
   },
   "keywords": [],
   "author": "",
