@@ -124,8 +124,8 @@ function normalizeSignupInput({ name, email, password, organizationName }) {
 function isMongoTransactionUnavailableError(error) {
   return Boolean(
     error &&
-      error.name === 'MongoServerError' &&
-      (error.code === 20 || /Transaction numbers are only allowed on a replica set member or mongos/i.test(error.message || ''))
+    error.name === 'MongoServerError' &&
+    (error.code === 20 || /Transaction numbers are only allowed on a replica set member or mongos/i.test(error.message || ''))
   );
 }
 
@@ -330,16 +330,16 @@ async function authenticateUser({
 
     const membership = await Membership.findOne(membershipQuery).sort({ createdAt: 1 });
 
+    if (!membership) {
+      throw new AuthenticationError();
+    }
+
     const organization = await Organization.findOne({
       _id: membership.organizationId,
       status: 'active',
     });
 
     if (!organization) {
-      throw new AuthenticationError();
-    }
-
-    if (!membership) {
       throw new AuthenticationError();
     }
 
@@ -383,12 +383,12 @@ async function authenticateUser({
         id: organization._id,
         name: organization.name,
         slug: organization.slug,
-          status: organization.status,
+        status: organization.status,
       },
       membership: {
         id: membership._id,
         role: membership.role,
-          status: membership.status,
+        status: membership.status,
       },
       accessToken,
       expiresIn: ACCESS_TOKEN_TTL_SECONDS,
