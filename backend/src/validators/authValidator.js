@@ -58,6 +58,51 @@ const signupSchema = {
   },
 };
 
+const loginSchema = {
+  validate(value) {
+    const payload = value && typeof value === 'object' ? value : {};
+    const details = [];
+    const allowedFields = new Set(['email', 'password']);
+
+    Object.keys(payload).forEach((key) => {
+      if (!allowedFields.has(key)) {
+        details.push({ path: [key], message: 'Unexpected field.' });
+      }
+    });
+
+    const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
+    if (!email) {
+      details.push({ path: ['email'], message: 'Email is required.' });
+    } else if (email.length > 160 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      details.push({ path: ['email'], message: 'Please provide a valid email address.' });
+    }
+
+    const password = typeof payload.password === 'string' ? payload.password : '';
+    if (!password) {
+      details.push({ path: ['password'], message: 'Password is required.' });
+    } else if (password.length < 8 || password.length > 128 || password.trim() !== password) {
+      details.push({ path: ['password'], message: 'Password must be 8-128 characters and contain no leading or trailing spaces.' });
+    }
+
+    if (details.length > 0) {
+      return {
+        value: payload,
+        error: {
+          details,
+        },
+      };
+    }
+
+    return {
+      value: {
+        email,
+        password,
+      },
+    };
+  },
+};
+
 module.exports = {
   signupSchema,
+  loginSchema,
 };

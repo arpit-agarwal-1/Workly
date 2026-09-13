@@ -23,6 +23,14 @@ const refreshTokenSessionSchema = new mongoose.Schema(
       minlength: 32,
       maxlength: 255,
     },
+    familyId: {
+      type: String,
+      required: true,
+      index: true,
+      trim: true,
+      minlength: 32,
+      maxlength: 64,
+    },
     expiresAt: {
       type: Date,
       required: true,

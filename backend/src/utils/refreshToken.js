@@ -1,5 +1,9 @@
 const crypto = require('crypto');
 
+function generateRefreshTokenFamilyId() {
+  return crypto.randomUUID();
+}
+
 function generateRefreshToken() {
   const token = crypto.randomBytes(32).toString('hex');
 
@@ -24,5 +28,6 @@ function hashRefreshToken(token) {
 
 module.exports = {
   generateRefreshToken,
+  generateRefreshTokenFamilyId,
   hashRefreshToken,
 };
