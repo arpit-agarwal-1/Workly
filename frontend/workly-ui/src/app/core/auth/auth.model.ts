@@ -64,3 +64,26 @@ export interface LoginResponse {
   success: boolean;
   data: LoginResponseData;
 }
+
+export interface RefreshResponse {
+  success: boolean;
+  data: {
+    accessToken: string;
+    expiresIn: number;
+    user: {
+      id: string;
+      name: string;
+      email: string;
+    };
+    organization: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+    membership: {
+      id: string;
+      role: string;
+      status: string;
+    };
+  };
+}
