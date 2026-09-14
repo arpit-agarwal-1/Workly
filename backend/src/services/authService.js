@@ -3,7 +3,12 @@ const mongoose = require('mongoose');
 const { User, Organization, Membership, RefreshTokenSession } = require('../models');
 const { verifyPassword, hashPassword } = require('../utils/password');
 const { signAccessToken } = require('../utils/jwt');
-const { generateRefreshToken, hashRefreshToken } = require('../utils/refreshToken');
+const { ACCESS_TOKEN_TTL_SECONDS } = require('../config/jwt');
+const {
+  generateRefreshToken,
+  generateRefreshTokenFamilyId,
+  hashRefreshToken,
+} = require('../utils/refreshToken');
 
 const AUTH_INVALID_CREDENTIALS = 'AUTH_INVALID_CREDENTIALS';
 const AUTH_EMAIL_ALREADY_EXISTS = 'AUTH_EMAIL_ALREADY_EXISTS';
@@ -28,6 +33,7 @@ class AuthenticationError extends Error {
     super(message);
     this.name = 'AuthenticationError';
     this.code = code;
+    this.statusCode = 401;
   }
 }
 
@@ -118,8 +124,8 @@ function normalizeSignupInput({ name, email, password, organizationName }) {
 function isMongoTransactionUnavailableError(error) {
   return Boolean(
     error &&
-      error.name === 'MongoServerError' &&
-      (error.code === 20 || /Transaction numbers are only allowed on a replica set member or mongos/i.test(error.message || ''))
+    error.name === 'MongoServerError' &&
+    (error.code === 20 || /Transaction numbers are only allowed on a replica set member or mongos/i.test(error.message || ''))
   );
 }
 
@@ -205,6 +211,7 @@ async function signupUser({
 
       const refreshToken = generateRefreshToken();
       const refreshTokenHash = hashRefreshToken(refreshToken);
+      const familyId = generateRefreshTokenFamilyId();
       const expiresAt = new Date(Date.now() + REFRESH_SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
 
       const refreshSession = await RefreshTokenSession.create(
@@ -213,6 +220,7 @@ async function signupUser({
             userId: user[0]._id,
             organizationId: organization[0]._id,
             tokenHash: refreshTokenHash,
+            familyId,
             expiresAt,
             revokedAt: null,
             lastUsedAt: null,
@@ -276,15 +284,15 @@ async function signupUser({
 }
 
 function validateAuthInput({ email, password, organizationId }) {
-  if (typeof email !== 'string' || typeof password !== 'string' || typeof organizationId !== 'string') {
+  if (typeof email !== 'string' || typeof password !== 'string') {
     throw new AuthenticationError();
   }
 
-  if (!email.trim() || !password.trim() || !organizationId.trim()) {
+  if (!email.trim() || !password.trim()) {
     throw new AuthenticationError();
   }
 
-  if (!mongoose.Types.ObjectId.isValid(organizationId)) {
+  if (organizationId !== undefined && (!mongoose.Types.ObjectId.isValid(organizationId) || !organizationId.trim())) {
     throw new AuthenticationError();
   }
 }
@@ -315,8 +323,19 @@ async function authenticateUser({
       throw new AuthenticationError();
     }
 
+    const membershipQuery = { userId: user._id, status: 'active' };
+    if (organizationId !== undefined) {
+      membershipQuery.organizationId = organizationId;
+    }
+
+    const membership = await Membership.findOne(membershipQuery).sort({ createdAt: 1 });
+
+    if (!membership) {
+      throw new AuthenticationError();
+    }
+
     const organization = await Organization.findOne({
-      _id: organizationId,
+      _id: membership.organizationId,
       status: 'active',
     });
 
@@ -324,24 +343,16 @@ async function authenticateUser({
       throw new AuthenticationError();
     }
 
-    const membership = await Membership.findOne({
-      userId: user._id,
-      organizationId: organization._id,
-      status: 'active',
-    });
-
-    if (!membership) {
-      throw new AuthenticationError();
-    }
-
     const refreshToken = generateRefreshToken();
     const tokenHash = hashRefreshToken(refreshToken);
+    const familyId = generateRefreshTokenFamilyId();
     const expiresAt = new Date(Date.now() + REFRESH_SESSION_TTL_DAYS * 24 * 60 * 60 * 1000);
 
     const sessionData = {
       userId: user._id,
       organizationId: organization._id,
       tokenHash,
+      familyId,
       expiresAt,
       revokedAt: null,
       lastUsedAt: null,
@@ -372,12 +383,15 @@ async function authenticateUser({
         id: organization._id,
         name: organization.name,
         slug: organization.slug,
+        status: organization.status,
       },
       membership: {
         id: membership._id,
         role: membership.role,
+        status: membership.status,
       },
       accessToken,
+      expiresIn: ACCESS_TOKEN_TTL_SECONDS,
       refreshToken,
     };
   } catch (error) {
@@ -393,8 +407,128 @@ async function authenticateUser({
   }
 }
 
+async function refreshUser({ refreshToken, userAgent, ipAddress } = {}) {
+  if (typeof refreshToken !== 'string' || refreshToken.length === 0) {
+    throw new AuthenticationError();
+  }
+
+  const tokenHash = hashRefreshToken(refreshToken);
+  const existingSession = await RefreshTokenSession.findOne({ tokenHash })
+    .select('+tokenHash')
+    .lean();
+
+  if (!existingSession) {
+    throw new AuthenticationError();
+  }
+
+  if (existingSession.revokedAt) {
+    if (existingSession.familyId) {
+      await RefreshTokenSession.updateMany(
+        { familyId: existingSession.familyId, revokedAt: null },
+        { $set: { revokedAt: new Date() } }
+      );
+    }
+    throw new AuthenticationError();
+  }
+
+  if (existingSession.expiresAt <= new Date()) {
+    throw new AuthenticationError();
+  }
+
+  const session = await mongoose.startSession();
+  let result;
+  let rotationConflict = false;
+
+  try {
+    await session.withTransaction(async () => {
+      const claimedSession = await RefreshTokenSession.findOneAndUpdate(
+        { _id: existingSession._id, revokedAt: null },
+        { $set: { revokedAt: new Date(), lastUsedAt: new Date() } },
+        { returnDocument: 'after', session }
+      ).lean();
+
+      if (!claimedSession) {
+        rotationConflict = true;
+        throw new AuthenticationError();
+      }
+
+      const user = await User.findById(existingSession.userId).session(session).lean();
+      const organization = await Organization.findOne({
+        _id: existingSession.organizationId,
+        status: 'active',
+      }).session(session).lean();
+      const membership = await Membership.findOne({
+        userId: existingSession.userId,
+        organizationId: existingSession.organizationId,
+        status: 'active',
+      }).session(session).lean();
+
+      if (!user || user.status !== 'active' || !organization || !membership) {
+        throw new AuthenticationError();
+      }
+
+      const replacementRefreshToken = generateRefreshToken();
+      const replacementSession = await RefreshTokenSession.create(
+        [
+          {
+            userId: user._id,
+            organizationId: organization._id,
+            tokenHash: hashRefreshToken(replacementRefreshToken),
+            familyId: existingSession.familyId,
+            expiresAt: new Date(Date.now() + REFRESH_SESSION_TTL_DAYS * 24 * 60 * 60 * 1000),
+            revokedAt: null,
+            lastUsedAt: null,
+            ...(typeof userAgent === 'string' && userAgent.trim() ? { userAgent: userAgent.trim().slice(0, 512) } : {}),
+            ...(typeof ipAddress === 'string' && ipAddress.trim() ? { ipAddress: ipAddress.trim().slice(0, 45) } : {}),
+          },
+        ],
+        { session }
+      );
+
+      result = {
+        accessToken: signAccessToken({
+          userId: user._id.toString(),
+          sessionId: replacementSession[0]._id.toString(),
+        }),
+        expiresIn: ACCESS_TOKEN_TTL_SECONDS,
+        refreshToken: replacementRefreshToken,
+      };
+    });
+
+    return result;
+  } catch (error) {
+    if (error instanceof AuthenticationError) {
+      if (rotationConflict && existingSession.familyId) {
+        await RefreshTokenSession.updateMany(
+          { familyId: existingSession.familyId, revokedAt: null },
+          { $set: { revokedAt: new Date() } }
+        );
+      }
+      throw error;
+    }
+
+    throw new AuthenticationError();
+  } finally {
+    await session.endSession();
+  }
+}
+
+async function logoutUser(refreshToken) {
+  if (typeof refreshToken !== 'string' || refreshToken.length === 0) {
+    return;
+  }
+
+  const tokenHash = hashRefreshToken(refreshToken);
+  await RefreshTokenSession.updateOne(
+    { tokenHash, revokedAt: null },
+    { $set: { revokedAt: new Date() } }
+  );
+}
+
 module.exports = {
   authenticateUser,
+  refreshUser,
+  logoutUser,
   signupUser,
   AuthenticationError,
   SignupError,
