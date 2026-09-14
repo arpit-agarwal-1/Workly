@@ -1,28 +1,28 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/auth/login';
-import { Signup } from './pages/auth/signup';
-import { Dashboard } from './pages/dashboard/dashboard';
-import { Home } from './pages/home/home';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Home,
-    title: 'Workly | Better Together',
+    loadComponent: () =>
+      import('./pages/home/home').then((m) => m.Home),
   },
   {
     path: 'login',
-    component: Login,
-    title: 'Sign in | Workly',
+    loadComponent: () =>
+      import('./pages/auth/login/login').then((m) => m.Login),
   },
   {
     path: 'signup',
-    component: Signup,
-    title: 'Get started | Workly',
+    loadComponent: () =>
+      import('./pages/auth/signup/signup').then((m) => m.Signup),
   },
   {
     path: 'dashboard',
-    component: Dashboard,
-    title: 'Dashboard | Workly',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];

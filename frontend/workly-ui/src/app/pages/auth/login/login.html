@@ -1,0 +1,96 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="brand">
+      <div class="brand-mark">W</div>
+
+      <div class="brand-name">
+        Workly
+      </div>
+    </div>
+
+    <div class="auth-heading">
+      <h1>Welcome back</h1>
+      <p>Sign in to continue to your workspace.</p>
+    </div>
+
+    @if (serverError()) {
+    <div class="server-error" role="alert">
+      {{ serverError() }}
+    </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()" novalidate>
+
+      <div class="form-field">
+        <label for="email">Email address</label>
+
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com" autocomplete="email"
+          [class.invalid]="email.invalid && email.touched" />
+
+        @if (email.invalid && email.touched) {
+        <div class="field-error">
+          @if (email.hasError('required')) {
+          <span>Email address is required.</span>
+          }
+
+          @if (email.hasError('email')) {
+          <span>Please enter a valid email address.</span>
+          }
+        </div>
+        }
+      </div>
+
+      <div class="form-field">
+        <div class="field-header">
+          <label for="password">Password</label>
+
+          <button type="button" class="forgot-password" disabled>
+            Forgot password?
+          </button>
+        </div>
+
+        <div class="password-input">
+          <input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+            placeholder="Enter your password" autocomplete="current-password"
+            [class.invalid]="password.invalid && password.touched" />
+
+          <button type="button" class="password-toggle"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'" [attr.aria-pressed]="showPassword()"
+            (click)="togglePasswordVisibility()">
+            @if (showPassword()) {
+            <svg lucideEyeOff [size]="18" [strokeWidth]="1.8"></svg>
+            } @else {
+            <svg lucideEye [size]="18" [strokeWidth]="1.8"></svg>
+            }
+          </button>
+        </div>
+
+        @if (password.invalid && password.touched) {
+        <div class="field-error">
+          Password is required.
+        </div>
+        }
+      </div>
+
+      <button type="submit" class="submit-button" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+        <span class="spinner"></span>
+        <span>Signing in...</span>
+        } @else {
+        <span>Sign in</span>
+        }
+      </button>
+
+    </form>
+
+    <div class="auth-footer">
+      <span>Don't have an account?</span>
+
+      <a routerLink="/signup">
+        Create account
+      </a>
+    </div>
+
+  </div>
+</div>
