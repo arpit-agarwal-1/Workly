@@ -1,7 +1,16 @@
 <header class="topbar">
-  <button class="hamburger" aria-label="Toggle menu" (click)="menu.toggle()">
-    <svg lucideMenu [size]="20" [strokeWidth]="1.8"></svg>
+  <button
+    class="hamburger"
+    aria-label="Toggle menu"
+    (click)="menu.toggle()"
+  >
+    <svg
+      lucideMenu
+      [size]="20"
+      [strokeWidth]="1.8"
+    ></svg>
   </button>
+
   <div class="search">
     <svg
       lucideSearch
@@ -18,7 +27,10 @@
   </div>
 
   <div class="topbar-actions">
-    <button class="notification" aria-label="Notifications">
+    <button
+      class="notification"
+      aria-label="Notifications"
+    >
       <svg
         lucideBell
         [size]="20"
@@ -28,20 +40,47 @@
       <span>3</span>
     </button>
 
-    <div class="profile">
-      <div class="avatar">A</div>
+    <div class="profile-wrapper">
+      <button
+        type="button"
+        class="profile"
+        aria-label="Open profile menu"
+        [attr.aria-expanded]="profileMenuOpen()"
+        (click)="toggleProfileMenu()"
+      >
+        <div class="avatar">A</div>
 
-      <div class="profile-info">
-        <strong>Arpit Agarwal</strong>
-        <small>Product Manager</small>
-      </div>
+        <div class="profile-info">
+          <strong>Arpit Agarwal</strong>
+          <small>Product Manager</small>
+        </div>
 
-      <svg
-        class="chevron"
-        lucideChevronDown
-        [size]="17"
-        [strokeWidth]="1.8"
-      ></svg>
+        <svg
+          class="chevron"
+          [class.open]="profileMenuOpen()"
+          lucideChevronDown
+          [size]="17"
+          [strokeWidth]="1.8"
+        ></svg>
+      </button>
+
+      @if (profileMenuOpen()) {
+        <div class="profile-menu">
+          <button
+            type="button"
+            class="profile-menu-item logout-item"
+            (click)="logout()"
+          >
+            <svg
+              lucideLogOut
+              [size]="17"
+              [strokeWidth]="1.8"
+            ></svg>
+
+            <span>Sign out</span>
+          </button>
+        </div>
+      }
     </div>
   </div>
 </header>

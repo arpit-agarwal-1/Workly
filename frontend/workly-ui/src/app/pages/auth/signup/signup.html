@@ -1,0 +1,205 @@
+<main class="signup-page">
+  <section
+    class="signup-card"
+    aria-labelledby="signup-title"
+  >
+    <header class="signup-header">
+      <a
+        routerLink="/"
+        class="brand"
+        aria-label="Workly home"
+      >
+        Workly
+      </a>
+
+      <div class="heading">
+        <p class="eyebrow">Get started</p>
+
+        <h1 id="signup-title">
+          Create your workspace
+        </h1>
+
+        <p class="subtitle">
+          Bring your team together and get work moving.
+        </p>
+      </div>
+    </header>
+
+    @if (errorMessage) {
+      <div
+        class="form-error"
+        role="alert"
+      >
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form
+      [formGroup]="signupForm"
+      (ngSubmit)="submit()"
+      novalidate
+    >
+      <div class="form-field">
+        <label for="name">
+          Full name
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          autocomplete="name"
+          placeholder="Enter your full name"
+        />
+
+        @if (
+          nameControl.touched &&
+          nameControl.hasError('required')
+        ) {
+          <span class="field-error">
+            Name is required.
+          </span>
+        }
+
+        @if (
+          nameControl.touched &&
+          nameControl.hasError('minlength')
+        ) {
+          <span class="field-error">
+            Name must be at least 2 characters.
+          </span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="email">
+          Work email
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="you@company.com"
+        />
+
+        @if (
+          emailControl.touched &&
+          emailControl.hasError('required')
+        ) {
+          <span class="field-error">
+            Email is required.
+          </span>
+        }
+
+        @if (
+          emailControl.touched &&
+          emailControl.hasError('email')
+        ) {
+          <span class="field-error">
+            Enter a valid email address.
+          </span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="organizationName">
+          Organization
+        </label>
+
+        <input
+          id="organizationName"
+          type="text"
+          formControlName="organizationName"
+          autocomplete="organization"
+          placeholder="Enter your organization name"
+        />
+
+        @if (
+          organizationNameControl.touched &&
+          organizationNameControl.hasError('required')
+        ) {
+          <span class="field-error">
+            Organization name is required.
+          </span>
+        }
+      </div>
+
+      <div class="form-field">
+        <label for="password">
+          Password
+        </label>
+
+        <div class="password-wrapper">
+          <input
+            id="password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+            placeholder="Create a password"
+          />
+
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="
+              showPassword
+                ? 'Hide password'
+                : 'Show password'
+            "
+          >
+            {{ showPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+
+        <span class="field-hint">
+          Use at least 8 characters.
+        </span>
+
+        @if (
+          passwordControl.touched &&
+          passwordControl.hasError('required')
+        ) {
+          <span class="field-error">
+            Password is required.
+          </span>
+        }
+
+        @if (
+          passwordControl.touched &&
+          passwordControl.hasError('minlength')
+        ) {
+          <span class="field-error">
+            Password must be at least 8 characters.
+          </span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="submit-button"
+        [disabled]="isSubmitting"
+      >
+        @if (isSubmitting) {
+          <span
+            class="spinner"
+            aria-hidden="true"
+          ></span>
+
+          Creating workspace...
+        } @else {
+          Create workspace
+        }
+      </button>
+    </form>
+
+    <p class="login-link">
+      Already have an account?
+      <a routerLink="/login">
+        Sign in
+      </a>
+    </p>
+  </section>
+</main>

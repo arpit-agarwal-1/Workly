@@ -1,28 +1,34 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/auth/login';
-import { Signup } from './pages/auth/signup';
-import { Dashboard } from './pages/dashboard/dashboard';
-import { Home } from './pages/home/home';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Home,
-    title: 'Workly | Better Together',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./pages/home/home').then((m) => m.Home),
   },
   {
     path: 'login',
-    component: Login,
-    title: 'Sign in | Workly',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./pages/auth/login/login').then((m) => m.Login),
   },
   {
     path: 'signup',
-    component: Signup,
-    title: 'Get started | Workly',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./pages/auth/signup/signup').then((m) => m.Signup),
   },
   {
     path: 'dashboard',
-    component: Dashboard,
-    title: 'Dashboard | Workly',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];
