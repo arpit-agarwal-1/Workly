@@ -22,7 +22,6 @@ const ROLE_PERMISSIONS = {
   manager: [
     'organization:read',
     'members:read',
-    'members:invite',
     'members:update',
     'projects:create',
     'projects:read',
