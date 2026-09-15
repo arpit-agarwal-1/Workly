@@ -5,6 +5,7 @@ const authRoutes = require('./auth');
 const organizationRoutes = require('./organization');
 const memberRoutes = require('./members');
 const projectRoutes = require('./projects');
+const invitationRoutes = require('./invitations');
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use('/auth', authRoutes);
 router.use('/organization', organizationRoutes);
 router.use('/members', memberRoutes);
 router.use('/projects', projectRoutes);
+router.use('/invitations', invitationRoutes);
 
 module.exports = router;
