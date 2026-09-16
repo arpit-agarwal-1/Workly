@@ -1,4 +1,11 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject
+} from '@angular/core';
+
+import { HttpClient } from '@angular/common/http';
+
 import {
   LucideFolderKanban,
   LucideListTodo,
@@ -17,4 +24,7 @@ import {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
-export class Dashboard {}
+export class Dashboard{
+  private readonly http = inject(HttpClient);
+
+}
