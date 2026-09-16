@@ -1,0 +1,654 @@
+<section class="members-page">
+
+  <header class="page-header">
+
+    <div>
+      <h1>Members</h1>
+
+      <p>
+        Manage people in your organization.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="invite-button"
+      (click)="openInviteModal()"
+    >
+      <span>+</span>
+      Invite Member
+    </button>
+
+  </header>
+
+
+  <div class="toolbar">
+
+    <div class="search-box">
+
+      <span class="search-icon">⌕</span>
+
+      <input
+        type="text"
+        placeholder="Search members..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="onSearchChange($event)"
+      />
+
+    </div>
+
+
+    <select
+      [ngModel]="selectedRole()"
+      (ngModelChange)="onRoleChange($event)"
+      aria-label="Filter by role"
+    >
+      <option value="all">
+        All roles
+      </option>
+
+      <option value="admin">
+        Admin
+      </option>
+
+      <option value="manager">
+        Manager
+      </option>
+
+      <option value="member">
+        Member
+      </option>
+    </select>
+
+
+    <select
+      [ngModel]="selectedStatus()"
+      (ngModelChange)="onStatusChange($event)"
+      aria-label="Filter by status"
+    >
+      <option value="all">
+        All statuses
+      </option>
+
+      <option value="active">
+        Active
+      </option>
+
+      <option value="invited">
+        Invited
+      </option>
+
+      <option value="removed">
+        Removed
+      </option>
+    </select>
+
+  </div>
+
+
+  <div class="members-card">
+
+    @if (isLoading()) {
+
+      <div class="state-container">
+
+        <div class="spinner"></div>
+
+        <span>
+          Loading members...
+        </span>
+
+      </div>
+
+    } @else if (errorMessage()) {
+
+      <div class="state-container error-state">
+
+        <strong>
+          {{ errorMessage() }}
+        </strong>
+
+        <button
+          type="button"
+          (click)="loadMembers()"
+        >
+          Retry
+        </button>
+
+      </div>
+
+    } @else if (filteredMembers().length === 0) {
+
+      <div class="state-container empty-state">
+
+        <strong>
+          No members found
+        </strong>
+
+        <span>
+          Try changing your search or filters.
+        </span>
+
+      </div>
+
+    } @else {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th class="actions-column">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (
+              member of filteredMembers();
+              track trackByMember($index, member)
+            ) {
+
+              <tr>
+
+                <td>
+
+                  <div class="member-cell">
+
+                    <div class="avatar">
+                      {{ getInitials(member) }}
+                    </div>
+
+                    <div class="member-info">
+
+                      <span class="member-name">
+                        {{ member.user.name }}
+                      </span>
+
+                      <span class="member-email">
+                        {{ member.user.email }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="role-badge"
+                    [class.admin]="member.role === 'admin'"
+                    [class.manager]="member.role === 'manager'"
+                    [class.member]="member.role === 'member'"
+                  >
+                    {{ getRoleLabel(member.role) }}
+                  </span>
+
+                </td>
+
+
+                <td>
+
+                  <span
+                    class="status-badge"
+                    [class.active]="member.status === 'active'"
+                    [class.invited]="member.status === 'invited'"
+                    [class.removed]="member.status === 'removed'"
+                  >
+                    <span class="status-dot"></span>
+
+                    {{ getStatusLabel(member.status) }}
+                  </span>
+
+                </td>
+
+
+                <td class="actions-column">
+
+                  <button
+                    type="button"
+                    class="action-button"
+                    aria-label="Member actions"
+                  >
+                    ⋯
+                  </button>
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <footer class="pagination">
+
+        <span>
+          Showing
+          {{ getPageStart() }}
+          -
+          {{ getPageEnd() }}
+          of
+          {{ total() }}
+        </span>
+
+        <div class="pagination-buttons">
+
+          <button
+            type="button"
+            [disabled]="currentPage() === 1"
+            (click)="previousPage()"
+          >
+            Previous
+          </button>
+
+          <span>
+            Page
+            {{ currentPage() }}
+            of
+            {{ totalPages() }}
+          </span>
+
+          <button
+            type="button"
+            [disabled]="currentPage() >= totalPages()"
+            (click)="nextPage()"
+          >
+            Next
+          </button>
+
+        </div>
+
+      </footer>
+
+    }
+
+  </div>
+
+
+  <!-- Pending Invitations -->
+
+  <section class="pending-section">
+
+    <div class="section-header">
+
+      <div>
+        <h2>Pending Invitations</h2>
+
+        <p>
+          Invitations waiting to be accepted.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="pending-card">
+
+      @if (isLoadingInvitations()) {
+
+        <div class="state-container">
+
+          <div class="spinner"></div>
+
+          <span>
+            Loading invitations...
+          </span>
+
+        </div>
+
+      } @else if (invitationListError()) {
+
+        <div class="state-container error-state">
+
+          <strong>
+            {{ invitationListError() }}
+          </strong>
+
+          <button
+            type="button"
+            (click)="loadPendingInvitations()"
+          >
+            Retry
+          </button>
+
+        </div>
+
+      } @else if (pendingInvitations().length === 0) {
+
+        <div class="state-container empty-state">
+
+          <strong>
+            No pending invitations
+          </strong>
+
+          <span>
+            New invitations will appear here.
+          </span>
+
+        </div>
+
+      } @else {
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Invited</th>
+                <th>Expires</th>
+                <th class="actions-column">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (
+                invitation of pendingInvitations();
+                track invitation.id
+              ) {
+
+                <tr>
+
+                  <td>
+                    <span class="invitation-email">
+                      {{ invitation.email }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="role-badge">
+                      {{ getInvitationRoleLabel(invitation.role) }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="date-text">
+                      {{ invitation.createdAt | date:'mediumDate' }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span class="date-text">
+                      {{ invitation.expiresAt | date:'mediumDate' }}
+                    </span>
+                  </td>
+
+                  <td class="actions-column">
+
+                    <button
+                      type="button"
+                      class="revoke-button"
+                      [disabled]="revokingInvitationId() === invitation.id"
+                      (click)="revokeInvitation(invitation.id)"
+                    >
+                      @if (
+                        revokingInvitationId() === invitation.id
+                      ) {
+                        Revoking...
+                      } @else {
+                        Revoke
+                      }
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </section>
+
+
+  <!-- Invite Modal -->
+
+  @if (showInviteModal()) {
+
+    <div
+      class="modal-backdrop"
+      (click)="closeInviteModal()"
+    >
+
+      <div
+        class="invite-modal"
+        (click)="$event.stopPropagation()"
+      >
+
+        @if (!invitationSuccess()) {
+
+          <header class="modal-header">
+
+            <div>
+              <h2>Invite Member</h2>
+
+              <p>
+                Add someone to your organization.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="modal-close"
+              [disabled]="isInviting()"
+              (click)="closeInviteModal()"
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+          </header>
+
+
+          <form
+            class="invite-form"
+            [formGroup]="inviteForm"
+            (ngSubmit)="submitInvitation()"
+          >
+
+            <div class="form-field">
+
+              <label for="invite-email">
+                Email
+              </label>
+
+              <input
+                id="invite-email"
+                type="email"
+                formControlName="email"
+                placeholder="member@company.com"
+                autocomplete="email"
+              />
+
+              @if (
+                inviteEmail.invalid &&
+                inviteEmail.touched
+              ) {
+
+                <span class="field-error">
+                  @if (inviteEmail.hasError('required')) {
+                    Email is required.
+                  } @else {
+                    Enter a valid email address.
+                  }
+                </span>
+
+              }
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label for="invite-role">
+                Role
+              </label>
+
+              <select
+                id="invite-role"
+                formControlName="role"
+              >
+                <option value="member">
+                  Member
+                </option>
+
+                <option value="manager">
+                  Manager
+                </option>
+              </select>
+
+              <span class="field-hint">
+                Admin invitations are not available.
+              </span>
+
+            </div>
+
+
+            @if (inviteError()) {
+
+              <div class="form-error">
+                {{ inviteError() }}
+              </div>
+
+            }
+
+
+            <footer class="modal-actions">
+
+              <button
+                type="button"
+                class="secondary-button"
+                [disabled]="isInviting()"
+                (click)="closeInviteModal()"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                class="primary-button"
+                [disabled]="isInviting()"
+              >
+                @if (isInviting()) {
+                  Sending...
+                } @else {
+                  Send Invitation
+                }
+              </button>
+
+            </footer>
+
+          </form>
+
+        } @else {
+
+          <header class="modal-header">
+
+            <div>
+              <h2>Invitation Created</h2>
+
+              <p>
+                Share this invitation link with the member.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="modal-close"
+              (click)="finishInvitation()"
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+          </header>
+
+
+          <div class="success-content">
+
+            <div class="success-icon">
+              ✓
+            </div>
+
+            <strong>
+              Invitation ready
+            </strong>
+
+            <span>
+              {{ createdInvitation()?.email }}
+            </span>
+
+
+            <div class="invitation-link-box">
+
+              <input
+                type="text"
+                [value]="invitationLink()"
+                readonly
+              />
+
+              <button
+                type="button"
+                (click)="copyInvitationLink()"
+              >
+                @if (copied()) {
+                  Copied
+                } @else {
+                  Copy
+                }
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <footer class="modal-actions">
+
+            <button
+              type="button"
+              class="primary-button"
+              (click)="finishInvitation()"
+            >
+              Done
+            </button>
+
+          </footer>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</section>

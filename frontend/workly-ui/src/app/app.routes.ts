@@ -22,10 +22,24 @@ export const routes: Routes = [
       import('./pages/auth/signup/signup').then((m) => m.Signup),
   },
   {
+    path: 'accept-invitation',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./pages/accept-invitation/accept-invitation')
+        .then((m) => m.AcceptInvitation),
+  },
+  {
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
+  },
+  {
+    path: 'members',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/members/members')
+        .then((m) => m.Members),
   },
   {
     path: '**',

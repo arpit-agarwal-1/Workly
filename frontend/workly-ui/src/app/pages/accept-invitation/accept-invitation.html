@@ -1,0 +1,231 @@
+<main class="signup-page">
+  <section
+    class="signup-card"
+    aria-labelledby="accept-invitation-title"
+  >
+    <header class="signup-header">
+      <a
+        routerLink="/"
+        class="brand"
+        aria-label="Workly home"
+      >
+        Workly
+      </a>
+
+      <div class="heading">
+        <p class="eyebrow">
+          You're invited
+        </p>
+
+        <h1 id="accept-invitation-title">
+          Join your organization
+        </h1>
+
+        <p class="subtitle">
+          Complete your account setup to start working with your team.
+        </p>
+      </div>
+    </header>
+
+    @if (errorMessage) {
+      <div
+        class="form-error"
+        role="alert"
+      >
+        {{ errorMessage }}
+      </div>
+    }
+
+    @if (successMessage) {
+      <div
+        class="form-success"
+        role="status"
+      >
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (token && !successMessage) {
+      <form
+        [formGroup]="acceptInvitationForm"
+        (ngSubmit)="submit()"
+        novalidate
+      >
+        <div class="form-field">
+          <label for="name">
+            Full name
+          </label>
+
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+            placeholder="Enter your full name"
+          />
+
+          @if (
+            nameControl.touched &&
+            nameControl.hasError('required')
+          ) {
+            <span class="field-error">
+              Name is required.
+            </span>
+          }
+
+          @if (
+            nameControl.touched &&
+            nameControl.hasError('minlength')
+          ) {
+            <span class="field-error">
+              Name must be at least 2 characters.
+            </span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="password">
+            Password
+          </label>
+
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="
+                showPassword
+                  ? 'text'
+                  : 'password'
+              "
+              formControlName="password"
+              autocomplete="new-password"
+              placeholder="Create a password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="
+                showPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              "
+            >
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          <span class="field-hint">
+            Use at least 8 characters.
+          </span>
+
+          @if (
+            passwordControl.touched &&
+            passwordControl.hasError('required')
+          ) {
+            <span class="field-error">
+              Password is required.
+            </span>
+          }
+
+          @if (
+            passwordControl.touched &&
+            passwordControl.hasError('minlength')
+          ) {
+            <span class="field-error">
+              Password must be at least 8 characters.
+            </span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">
+            Confirm password
+          </label>
+
+          <div class="password-wrapper">
+            <input
+              id="confirmPassword"
+              [type]="
+                showConfirmPassword
+                  ? 'text'
+                  : 'password'
+              "
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+              placeholder="Confirm your password"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="
+                showConfirmPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              "
+            >
+              {{ showConfirmPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          @if (
+            confirmPasswordControl.touched &&
+            confirmPasswordControl.hasError('required')
+          ) {
+            <span class="field-error">
+              Please confirm your password.
+            </span>
+          }
+
+          @if (
+            confirmPasswordControl.touched &&
+            confirmPasswordControl.hasError('mismatch')
+          ) {
+            <span class="field-error">
+              Passwords do not match.
+            </span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="isSubmitting"
+        >
+          @if (isSubmitting) {
+            <span
+              class="spinner"
+              aria-hidden="true"
+            ></span>
+
+            Creating account...
+          } @else {
+            Create account
+          }
+        </button>
+      </form>
+    }
+
+    @if (!token) {
+      <div class="invalid-invitation">
+        <p class="invalid-title">
+          Invalid invitation link
+        </p>
+
+        <p class="invalid-text">
+          This invitation link is missing the required invitation token.
+          Please ask your organization administrator for a new invitation.
+        </p>
+      </div>
+    }
+
+    <p class="login-link">
+      Already have an account?
+      <a routerLink="/login">
+        Sign in
+      </a>
+    </p>
+  </section>
+</main>
