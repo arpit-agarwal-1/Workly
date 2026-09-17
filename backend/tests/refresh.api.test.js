@@ -89,6 +89,23 @@ describe('Refresh API', () => {
     assert.equal(body.message, 'Token refreshed successfully');
     assert.equal(typeof body.data.accessToken, 'string');
     assert.equal(body.data.expiresIn, 900);
+    assert.deepEqual(body.data.user, {
+      id: account.user._id.toString(),
+      name: 'Refresh User',
+      email: 'refresh@example.com',
+      status: 'active',
+    });
+    assert.deepEqual(body.data.organization, {
+      id: account.organization._id.toString(),
+      name: 'Refresh Org',
+      slug: 'refresh-org',
+      status: 'active',
+    });
+    assert.deepEqual(body.data.membership, {
+      id: account.membership._id.toString(),
+      role: 'member',
+      status: 'active',
+    });
     assert.equal(body.data.refreshToken, undefined);
     assert.match(cookie, /refreshToken=/);
     assert.match(cookie, /HttpOnly/);

@@ -486,6 +486,23 @@ async function refreshUser({ refreshToken, userAgent, ipAddress } = {}) {
       );
 
       result = {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          status: user.status,
+        },
+        organization: {
+          id: organization._id,
+          name: organization.name,
+          slug: organization.slug,
+          status: organization.status,
+        },
+        membership: {
+          id: membership._id,
+          role: membership.role,
+          status: membership.status,
+        },
         accessToken: signAccessToken({
           userId: user._id.toString(),
           sessionId: replacementSession[0]._id.toString(),

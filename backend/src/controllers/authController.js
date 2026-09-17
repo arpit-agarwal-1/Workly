@@ -68,10 +68,7 @@ async function refresh(req, res, next) {
     return res.status(200).json({
       status: 'success',
       message: 'Token refreshed successfully',
-      data: {
-        accessToken: result.accessToken,
-        expiresIn: result.expiresIn,
-      },
+      data: (({ refreshToken, ...responseData }) => responseData)(result),
     });
   } catch (error) {
     return next(error);

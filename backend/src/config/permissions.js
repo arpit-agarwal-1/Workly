@@ -38,6 +38,7 @@ const ROLE_PERMISSIONS = {
     'projects:read',
     'tasks:read',
     'teams:read',
+    'members:read',
   ],
 };
 

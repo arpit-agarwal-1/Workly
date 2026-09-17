@@ -11,8 +11,8 @@ import {
 } from 'rxjs';
 
 import { AuthState } from './auth.state';
-
 import { API_CONFIG } from '../api/api.config';
+
 import {
   AuthResponse,
   SignupRequest,
@@ -26,7 +26,6 @@ import {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-
   private readonly authState = inject(AuthState);
 
   private refreshTimer: ReturnType<typeof setTimeout> | null = null;
@@ -89,7 +88,9 @@ export class AuthService {
     }
   }
 
-  signup(payload: SignupRequest): Observable<AuthResponse> {
+  signup(
+    payload: SignupRequest
+  ): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(
         `${API_CONFIG.baseUrl}/auth/signup`,
@@ -100,15 +101,26 @@ export class AuthService {
       )
       .pipe(
         tap((response: AuthResponse) => {
-          const token = response.data.accessToken;
+          const token =
+            response.data.accessToken;
+
+          const organizationId =
+            response.data.organization.id;
 
           this.authState.setAccessToken(token);
+
+          this.authState.setOrganizationId(
+            organizationId
+          );
+
           this.scheduleTokenRefresh(token);
         })
       );
   }
 
-  login(payload: LoginRequest): Observable<LoginResponse> {
+  login(
+    payload: LoginRequest
+  ): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(
         `${API_CONFIG.baseUrl}/auth/login`,
@@ -119,9 +131,18 @@ export class AuthService {
       )
       .pipe(
         tap((response: LoginResponse) => {
-          const token = response.data.accessToken;
+          const token =
+            response.data.accessToken;
+
+          const organizationId =
+            response.data.organization.id;
 
           this.authState.setAccessToken(token);
+
+          this.authState.setOrganizationId(
+            organizationId
+          );
+
           this.scheduleTokenRefresh(token);
         })
       );
@@ -142,14 +163,25 @@ export class AuthService {
       )
       .pipe(
         tap((response: RefreshResponse) => {
-          const token = response.data.accessToken;
+          const token =
+            response.data.accessToken;
+
+          const organizationId =
+            response.data.organization.id;
 
           this.authState.setAccessToken(token);
+
+          this.authState.setOrganizationId(
+            organizationId
+          );
+
           this.scheduleTokenRefresh(token);
         }),
+
         finalize(() => {
           this.refreshInFlight$ = null;
         }),
+
         shareReplay({
           bufferSize: 1,
           refCount: false
@@ -159,20 +191,24 @@ export class AuthService {
     return this.refreshInFlight$;
   }
 
-  restoreSession(): Observable<RefreshResponse | null> {
-    return this.refresh().pipe(
-      map((response) => {
-        this.authState.markInitialized();
-        return response;
-      }),
-      catchError(() => {
-        this.authState.clear();
-        this.authState.markInitialized();
+restoreSession(): Observable<RefreshResponse | null> {
 
-        return of(null);
-      })
-    );
-  }
+  return this.refresh().pipe(
+    map((response) => {
+      this.authState.markInitialized();
+      return response;
+    }),
+
+    catchError((error) => {
+
+      this.authState.clear();
+      this.authState.markInitialized();
+
+      return of(null);
+    })
+  );
+}
+
   logout(): Observable<void> {
     return this.http
       .post<void>(
@@ -185,13 +221,17 @@ export class AuthService {
       .pipe(
         tap(() => {
           this.clearRefreshTimer();
-          this.clearAccessToken();
+          this.authState.clear();
         })
       );
   }
 
   getAccessToken(): string | null {
     return this.authState.getAccessToken();
+  }
+
+  getOrganizationId(): string | null {
+    return this.authState.getOrganizationId();
   }
 
   clearAccessToken(): void {
