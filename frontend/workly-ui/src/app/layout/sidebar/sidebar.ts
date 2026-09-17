@@ -1,6 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { MobileMenuService } from '../../services/mobile-menu.service';
 import {
+  RouterLink, RouterLinkActive
+} from '@angular/router';
+import {
   LucideLayoutDashboard,
   LucideFolderKanban,
   LucideListChecks,
@@ -14,6 +17,8 @@ import {
 @Component({
   selector: 'app-sidebar',
   imports: [
+    RouterLink,
+    RouterLinkActive,
     LucideLayoutDashboard,
     LucideFolderKanban,
     LucideListChecks,
