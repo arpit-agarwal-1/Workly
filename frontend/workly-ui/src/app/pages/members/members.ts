@@ -18,6 +18,7 @@ import {
   Member,
   MemberRole,
   MemberStatus,
+  MemberUserStatus,
 } from '../../core/members/member.model';
 
 import { MemberService } from '../../core/members/member.service';
@@ -207,7 +208,7 @@ export class Members implements OnInit {
     const status =
       this.selectedStatus();
 
-    const filtered =
+    const memberResults =
       this.members().filter(
         (member) => {
           const matchesSearch =
@@ -235,8 +236,59 @@ export class Members implements OnInit {
         }
       );
 
+    if (status === 'all' || status === 'invited') {
+      const invitationResults =
+        this.pendingInvitations()
+          .filter(
+            (invitation) => {
+              const matchesSearch =
+                !search ||
+                invitation.email
+                  .toLowerCase()
+                  .includes(search);
+
+              const matchesRole =
+                role === 'all' ||
+                invitation.role === role;
+
+              return (
+                matchesSearch &&
+                matchesRole
+              );
+            }
+          )
+          .map(
+            (invitation): Member => ({
+              id: invitation.id,
+
+              user: {
+                id: invitation.id,
+                name: invitation.email,
+                email: invitation.email,
+                status: 'active' as MemberUserStatus,
+              },
+
+              role: invitation.role as MemberRole,
+              status: 'invited' as MemberStatus,
+
+              createdAt:
+                invitation.createdAt,
+
+              updatedAt:
+                invitation.updatedAt,
+            })
+          );
+
+      this.filteredMembers.set([
+        ...memberResults,
+        ...invitationResults,
+      ]);
+
+      return;
+    }
+
     this.filteredMembers.set(
-      filtered
+      memberResults
     );
   }
 
@@ -545,7 +597,7 @@ export class Members implements OnInit {
 
     return (
       (this.currentPage() - 1) *
-        this.pageSize +
+      this.pageSize +
       1
     );
   }
@@ -553,7 +605,7 @@ export class Members implements OnInit {
   protected getPageEnd(): number {
     return Math.min(
       this.currentPage() *
-        this.pageSize,
+      this.pageSize,
       this.total()
     );
   }
