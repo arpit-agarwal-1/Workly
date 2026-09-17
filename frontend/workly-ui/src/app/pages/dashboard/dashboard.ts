@@ -1,10 +1,9 @@
 import {
   Component,
   OnInit,
-  inject
+  inject,
+  signal,
 } from '@angular/core';
-
-import { HttpClient } from '@angular/common/http';
 
 import {
   LucideFolderKanban,
@@ -12,6 +11,8 @@ import {
   LucideTriangleAlert,
   LucideUsers,
 } from '@lucide/angular';
+
+import { MemberService } from '../../core/members/member.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,24 @@ import {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
-export class Dashboard{
-  private readonly http = inject(HttpClient);
+export class Dashboard {
+  private readonly memberService = inject(MemberService);
+
+  protected readonly totalMembers = signal(0);
+
+  ngOnInit(): void {
+    this.loadTotalMembers();
+  }
+
+  private loadTotalMembers(): void {
+    this.memberService
+      .listMembers(1, 1)
+      .subscribe({
+        next: (response) => {
+          this.totalMembers.set(response.data.total);
+        },
+      });
+  }
+
 
 }
