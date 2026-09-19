@@ -8,6 +8,7 @@ const validate = require('../../middleware/validate');
 const {
   validateCreateTeam,
   validateUpdateTeam,
+  validateAddTeamMember,
 } = require('../../validators/teamValidator');
 
 const teamController = require('../../controllers/teamController');
@@ -28,6 +29,25 @@ router.get(
   '/',
   authorize('teams:read'),
   teamController.listTeams
+);
+
+router.post(
+  '/:teamId/members',
+  authorize('team-members:add'),
+  validate(validateAddTeamMember),
+  teamController.addTeamMember
+);
+
+router.get(
+  '/:teamId/members',
+  authorize('team-members:read'),
+  teamController.listTeamMembers
+);
+
+router.delete(
+  '/:teamId/members/:membershipId',
+  authorize('team-members:remove'),
+  teamController.removeTeamMember
 );
 
 router.get(
