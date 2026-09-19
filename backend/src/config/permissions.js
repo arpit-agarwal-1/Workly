@@ -18,6 +18,9 @@ const ROLE_PERMISSIONS = {
     'teams:read',
     'teams:update',
     'teams:delete',
+    'team-members:add',
+    'team-members:read',
+    'team-members:remove',
   ],
   manager: [
     'organization:read',
@@ -29,9 +32,10 @@ const ROLE_PERMISSIONS = {
     'tasks:create',
     'tasks:read',
     'tasks:update',
-    'teams:create',
     'teams:read',
-    'teams:update',
+    'team-members:add',
+    'team-members:read',
+    'team-members:remove',
   ],
   member: [
     'organization:read',
@@ -39,6 +43,7 @@ const ROLE_PERMISSIONS = {
     'tasks:read',
     'teams:read',
     'members:read',
+    'team-members:read',
   ],
 };
 

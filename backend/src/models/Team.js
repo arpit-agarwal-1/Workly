@@ -28,7 +28,10 @@ const teamSchema = new mongoose.Schema(
   }
 );
 
-teamSchema.index({ organizationId: 1, name: 1 });
+teamSchema.index(
+  { organizationId: 1, name: 1 },
+  { unique: true }
+);
 
 const Team = mongoose.model('Team', teamSchema);
 

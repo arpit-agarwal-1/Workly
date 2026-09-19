@@ -24,7 +24,7 @@ async function listTeams(req, res, next) {
       req.query.limit
     );
 
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       data: result,
     });
@@ -40,7 +40,7 @@ async function getTeam(req, res, next) {
       req.params.teamId
     );
 
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       data: team,
     });
@@ -57,7 +57,7 @@ async function updateTeam(req, res, next) {
       req.body
     );
 
-    return res.json({
+    return res.status(200).json({
       status: 'success',
       data: team,
     });
@@ -79,10 +79,62 @@ async function deleteTeam(req, res, next) {
   }
 }
 
+async function addTeamMember(req, res, next) {
+  try {
+    const teamMember = await teamService.addTeamMember(
+      req.tenant.organizationId,
+      req.params.teamId,
+      req.body.membershipId
+    );
+
+    return res.status(201).json({
+      status: 'success',
+      data: teamMember,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function listTeamMembers(req, res, next) {
+  try {
+    const result = await teamService.listTeamMembers(
+      req.tenant.organizationId,
+      req.params.teamId,
+      req.query.page,
+      req.query.limit
+    );
+
+    return res.status(200).json({
+      status: 'success',
+      data: result,
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function removeTeamMember(req, res, next) {
+  try {
+    await teamService.removeTeamMember(
+      req.tenant.organizationId,
+      req.params.teamId,
+      req.params.membershipId
+    );
+
+    return res.status(204).send();
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
-  createTeam,
+ createTeam,
   listTeams,
   getTeam,
   updateTeam,
   deleteTeam,
+  addTeamMember,
+  listTeamMembers,
+  removeTeamMember,
 };
