@@ -69,4 +69,10 @@ router.delete(
   teamController.deleteTeam
 );
 
+router.get(
+  '/:teamId/available-members',
+  authorize('team-members:read'),
+  teamController.listAvailableMembers
+);
+
 module.exports = router;

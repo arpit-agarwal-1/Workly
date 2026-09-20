@@ -128,6 +128,26 @@ async function removeTeamMember(req, res, next) {
   }
 }
 
+async function listAvailableMembers(req, res, next){
+  try {
+      const result =
+        await teamService.listAvailableMembers(
+          req.tenant.organizationId,
+          req.params.teamId,
+          req.query.page,
+          req.query.limit,
+          req.query.search
+        );
+
+      res.status(200).json({
+        status: 'success',
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+} 
+
 module.exports = {
  createTeam,
   listTeams,
@@ -137,4 +157,5 @@ module.exports = {
   addTeamMember,
   listTeamMembers,
   removeTeamMember,
+  listAvailableMembers,
 };

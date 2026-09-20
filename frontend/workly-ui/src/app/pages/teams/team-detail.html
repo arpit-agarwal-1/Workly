@@ -1,0 +1,581 @@
+<section class="team-detail-page">
+
+  <header class="team-header">
+
+    <div class="header-left">
+
+      <a routerLink="/teams" class="back-link">
+        <svg lucideArrowLeft [size]="16" [strokeWidth]="1.8"></svg>
+
+        <span>Back to Teams</span>
+      </a>
+
+      @if (team()) {
+
+      <div class="team-heading">
+
+        <div class="team-icon">
+          <span>
+            {{ team()?.name?.charAt(0)?.toUpperCase() }}
+          </span>
+        </div>
+
+        <div>
+
+          <h1>
+            {{ team()?.name }}
+          </h1>
+
+          <p>
+            {{ team()?.description || 'No description provided.' }}
+          </p>
+
+        </div>
+
+      </div>
+
+      }
+
+    </div>
+
+
+    @if (team()) {
+
+    <button type="button" class="secondary-button" (click)="openEditModal()">
+      Edit team
+    </button>
+
+    }
+
+  </header>
+
+
+  @if (isLoading()) {
+
+  <div class="team-card">
+
+    <div class="state-container">
+
+      <div class="spinner"></div>
+
+      <span>
+        Loading team...
+      </span>
+
+    </div>
+
+  </div>
+
+  } @else if (errorMessage()) {
+
+  <div class="team-card">
+
+    <div class="state-container error-state">
+
+      <strong>
+        {{ errorMessage() }}
+      </strong>
+
+      <a routerLink="/teams">
+        Back to Teams
+      </a>
+
+    </div>
+
+  </div>
+
+  } @else if (team()) {
+
+  <section class="members-section">
+
+    <header class="section-header">
+
+      <div>
+
+        <h2>
+          Members
+        </h2>
+
+        <p>
+          {{ total() }}
+          {{ total() === 1 ? 'member' : 'members' }}
+          in this team.
+        </p>
+
+      </div>
+
+
+      <button type="button" class="primary-button" (click)="openAddMemberModal()">
+        <svg lucidePlus [size]="16" [strokeWidth]="2"></svg>
+
+        Add member
+      </button>
+
+    </header>
+
+
+    <div class="members-card">
+
+      @if (members().length === 0) {
+
+      <div class="state-container">
+
+        <strong>
+          No members in this team
+        </strong>
+
+        <span>
+          Add organization members to this team.
+        </span>
+
+      </div>
+
+      } @else {
+
+      <div class="table-wrapper">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th class="actions-column">
+                Action
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (
+            member of members();
+            track trackByMember($index, member)
+            ) {
+
+            <tr>
+
+              <td>
+
+                <div class="member-cell">
+
+                  <div class="avatar">
+                    {{ getInitials(member) }}
+                  </div>
+
+                  <span class="member-name">
+                    {{ member.user.name }}
+                  </span>
+
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <span class="member-email">
+                  {{ member.user.email }}
+                </span>
+
+              </td>
+
+
+              <td>
+
+                <span class="status-badge active">
+                  <span class="status-dot"></span>
+                  Active
+                </span>
+
+              </td>
+
+
+              <td class="actions-column">
+
+                <button type="button" class="action-button danger" [disabled]="
+                          removingMemberId() === member.id
+                        " (click)="openRemoveMemberDialog(member)" aria-label="Remove member" title="Remove member">
+
+                  @if (
+                  removingMemberId() === member.id
+                  ) {
+                  ...
+                  } @else {
+
+                  <svg lucideTrash2 [size]="16" [strokeWidth]="1.8"></svg>
+
+                  }
+
+                </button>
+
+              </td>
+
+            </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+      <footer class="pagination">
+
+        <span>
+          Showing
+          {{ getPageStart() }}
+          -
+          {{ getPageEnd() }}
+          of
+          {{ total() }}
+        </span>
+
+        <div class="pagination-buttons">
+
+          <button type="button" [disabled]="currentPage() === 1" (click)="previousPage()">
+            <svg lucideChevronLeft [size]="14" [strokeWidth]="1.8"></svg>
+
+            Previous
+          </button>
+
+          <span>
+            Page
+            {{ currentPage() }}
+            of
+            {{ totalPages() }}
+          </span>
+
+          <button type="button" [disabled]="
+                  currentPage() >= totalPages()
+                " (click)="nextPage()">
+            Next
+
+            <svg lucideChevronRight [size]="14" [strokeWidth]="1.8"></svg>
+
+          </button>
+
+        </div>
+
+      </footer>
+
+      }
+
+    </div>
+
+  </section>
+
+  }
+
+  <!-- Add Member Modal -->
+
+  @if (showAddMemberModal()) {
+
+  <div class="modal-backdrop" (click)="closeAddMemberModal()">
+
+    <div class="team-modal" (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <h2>
+            Add member
+          </h2>
+
+          <p>
+            Select an organization member to add to this team.
+          </p>
+
+        </div>
+
+        <button type="button" class="modal-close" [disabled]="isAddingMember()" (click)="closeAddMemberModal()"
+          aria-label="Close">
+          <svg lucideX [size]="18" [strokeWidth]="1.8"></svg>
+        </button>
+
+      </header>
+
+
+      <div class="add-member-content">
+
+        <div class="search-box">
+
+          <svg lucideSearch [size]="16" [strokeWidth]="1.8"></svg>
+
+          <input type="text" placeholder="Search members..." [ngModel]="memberSearch()"
+            (ngModelChange)="onMemberSearch($event)" />
+
+        </div>
+
+
+        @if (isLoadingAvailable()) {
+
+        <div class="modal-state">
+
+          <div class="spinner"></div>
+
+          <span>
+            Loading members...
+          </span>
+
+        </div>
+
+        } @else if (availableMembersError()) {
+
+        <div class="modal-state error-state">
+
+          <strong>
+            {{ availableMembersError() }}
+          </strong>
+
+          <button type="button" (click)="loadAvailableMembers()">
+            Retry
+          </button>
+
+        </div>
+
+        } @else if (availableMembers().length === 0) {
+
+        <div class="modal-state">
+
+          <strong>
+            No available members
+          </strong>
+
+          <span>
+            All matching organization members are already in this team.
+          </span>
+
+        </div>
+
+        } @else {
+
+        <div class="available-members">
+
+          @for (
+          member of availableMembers();
+          track trackByAvailableMember($index, member)
+          ) {
+
+          <button type="button" class="member-option" [class.selected]="
+                    selectedMemberId() === member.id
+                  " (click)="selectMember(member.id)">
+
+            <div class="avatar">
+              {{ getAvailableInitials(member) }}
+            </div>
+
+            <div class="member-option-info">
+
+              <strong>
+                {{ member.user.name }}
+              </strong>
+
+              <span>
+                {{ member.user.email }}
+              </span>
+
+            </div>
+
+            <span class="member-role">
+              {{ member.role }}
+            </span>
+
+          </button>
+
+          }
+
+        </div>
+
+        }
+
+
+        @if (addMemberError()) {
+
+        <div class="form-error">
+          {{ addMemberError() }}
+        </div>
+
+        }
+
+      </div>
+
+
+      <footer class="modal-actions">
+
+        <button type="button" class="secondary-button" [disabled]="isAddingMember()" (click)="closeAddMemberModal()">
+          Cancel
+        </button>
+
+        <button type="button" class="primary-button" [disabled]="
+              !selectedMemberId() ||
+              isAddingMember()
+            " (click)="addMember()">
+          @if (isAddingMember()) {
+          Adding...
+          } @else {
+          Add member
+          }
+        </button>
+
+      </footer>
+
+    </div>
+
+  </div>
+
+  }
+
+
+  <!-- Edit Team Modal -->
+
+  @if (showEditModal()) {
+
+  <div class="modal-backdrop" (click)="closeEditModal()">
+
+    <div class="team-modal" (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+
+        <div>
+
+          <h2>
+            Edit team
+          </h2>
+
+          <p>
+            Update the team's information.
+          </p>
+
+        </div>
+
+        <button type="button" class="modal-close" [disabled]="isUpdating()" (click)="closeEditModal()">
+          <svg lucideX [size]="18" [strokeWidth]="1.8"></svg>
+        </button>
+
+      </header>
+
+
+      <form class="team-form" [formGroup]="teamForm" (ngSubmit)="updateTeam()">
+
+        <div class="form-field">
+
+          <label for="edit-team-name">
+            Team name
+          </label>
+
+          <input id="edit-team-name" type="text" formControlName="name" maxlength="100" />
+
+          @if (
+          teamName.invalid &&
+          teamName.touched
+          ) {
+
+          <span class="field-error">
+            Team name is required.
+          </span>
+
+          }
+
+        </div>
+
+
+        <div class="form-field">
+
+          <label for="edit-team-description">
+            Description
+          </label>
+
+          <textarea id="edit-team-description" formControlName="description" maxlength="500" rows="4"></textarea>
+
+        </div>
+
+
+        @if (updateError()) {
+
+        <div class="form-error">
+          {{ updateError() }}
+        </div>
+
+        }
+
+
+        <footer class="modal-actions">
+
+          <button type="button" class="secondary-button" [disabled]="isUpdating()" (click)="closeEditModal()">
+            Cancel
+          </button>
+
+          <button type="submit" class="primary-button" [disabled]="isUpdating()">
+            @if (isUpdating()) {
+            Saving...
+            } @else {
+            Save changes
+            }
+          </button>
+
+        </footer>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  }
+
+</section>
+
+@if (
+showRemoveMemberDialog() &&
+memberToRemove()
+) {
+<div class="dialog-backdrop" (click)="closeRemoveMemberDialog()">
+  <div class="confirmation-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3>Remove team member?</h3>
+
+      <button type="button" class="dialog-close" (click)="closeRemoveMemberDialog()" aria-label="Close">
+        <svg lucideX [size]="18" [strokeWidth]="1.8"></svg>
+      </button>
+    </div>
+
+    <div class="dialog-body">
+      <p>
+        Are you sure you want to remove
+        <strong>
+          {{ memberToRemove()?.user?.name }}
+        </strong>
+        from this team?
+      </p>
+
+      <p class="dialog-note">
+        They will remain a member of the organization.
+      </p>
+      @if (removeMemberError()) {
+      <div class="dialog-error">
+        {{ removeMemberError() }}
+      </div>
+      }
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" class="btn-secondary" (click)="closeRemoveMemberDialog()">
+        Cancel
+      </button>
+
+      <button type="button" class="btn-danger" (click)="confirmRemoveMember()" [disabled]="!!removingMemberId()">
+        {{
+        removingMemberId()
+        ? 'Removing...'
+        : 'Remove'
+        }}
+      </button>
+    </div>
+  </div>
+</div>
+}

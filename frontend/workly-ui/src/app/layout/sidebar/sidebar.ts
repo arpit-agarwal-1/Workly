@@ -12,6 +12,7 @@ import {
   LucideChartNoAxesCombined,
   LucideSettings,
   LucideX,
+  LucideUsersRound,
 } from '@lucide/angular';
 
 @Component({
@@ -27,6 +28,7 @@ import {
     LucideChartNoAxesCombined,
     LucideSettings,
     LucideX,
+    LucideUsersRound
   ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
