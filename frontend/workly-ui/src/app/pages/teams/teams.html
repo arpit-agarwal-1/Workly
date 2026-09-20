@@ -1,0 +1,368 @@
+<section class="teams-page">
+
+    <header class="page-header">
+
+        <div>
+            <h1>Teams</h1>
+
+            <p>
+                Manage and organize your teams.
+            </p>
+        </div>
+
+        <button type="button" class="primary-button" (click)="openCreateModal()">
+            <svg lucidePlus [size]="16" [strokeWidth]="2"></svg>
+
+            <span>Create team</span>
+        </button>
+
+    </header>
+
+
+    <div class="toolbar">
+
+        <div class="search-box">
+
+            <svg lucideSearch [size]="16" [strokeWidth]="1.8"></svg>
+
+            <input type="text" placeholder="Search teams..." [ngModel]="searchTerm()"
+                (ngModelChange)="onSearchChange($event)" />
+
+        </div>
+
+    </div>
+
+
+    <div class="teams-card">
+
+        @if (isLoading()) {
+
+        <div class="state-container">
+
+            <div class="spinner"></div>
+
+            <span>
+                Loading teams...
+            </span>
+
+        </div>
+
+        } @else if (errorMessage()) {
+
+        <div class="state-container error-state">
+
+            <strong>
+                {{ errorMessage() }}
+            </strong>
+
+            <button type="button" (click)="loadTeams()">
+                Retry
+            </button>
+
+        </div>
+
+        } @else if (filteredTeams().length === 0) {
+
+        <div class="state-container empty-state">
+
+            <strong>
+                No teams found
+            </strong>
+
+            <span>
+                Try changing your search or create a new team.
+            </span>
+
+        </div>
+
+        } @else {
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Description</th>
+                        <th class="actions-column">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @for (
+                    team of filteredTeams();
+                    track trackByTeam($index, team)
+                    ) {
+
+                    <tr>
+
+                        <td>
+
+                            <div class="team-cell">
+
+                                <div class="team-icon">
+                                    <svg lucideUsers [size]="17" [strokeWidth]="1.8"></svg>
+                                </div>
+
+                                <div class="team-info">
+
+                                    <span class="team-name">
+                                        {{ team.name }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="team-description">
+                                {{ team.description || '—' }}
+                            </span>
+
+                        </td>
+
+
+                        <td class="actions-column">
+
+                            <div class="actions">
+
+                                <a class="action-button" [routerLink]="[
+                        '/teams',
+                        team._id
+                      ]" aria-label="View team" title="View team">
+                                    <svg lucideEye [size]="16" [strokeWidth]="1.8"></svg>
+                                </a>
+
+
+                                <a class="action-button" [routerLink]="[
+                        '/teams',
+                        team._id
+                      ]" aria-label="Edit team" title="Edit team">
+                                    <svg lucidePencil [size]="16" [strokeWidth]="1.8"></svg>
+                                </a>
+
+
+                                <button type="button" class="action-button danger" aria-label="Delete team"
+                                    title="Delete team" (click)="openDeleteModal(team)">
+                                    <svg lucideTrash2 [size]="16" [strokeWidth]="1.8"></svg>
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <footer class="pagination">
+
+            <span>
+                Showing
+                {{ getPageStart() }}
+                -
+                {{ getPageEnd() }}
+                of
+                {{ total() }}
+            </span>
+
+            <div class="pagination-buttons">
+
+                <button type="button" [disabled]="currentPage() === 1" (click)="previousPage()">
+                    <svg lucideChevronLeft [size]="14" [strokeWidth]="1.8"></svg>
+
+                    Previous
+                </button>
+
+                <span>
+                    Page
+                    {{ currentPage() }}
+                    of
+                    {{ totalPages() }}
+                </span>
+
+                <button type="button" [disabled]="currentPage() >= totalPages()" (click)="nextPage()">
+                    Next
+
+                    <svg lucideChevronRight [size]="14" [strokeWidth]="1.8"></svg>
+                </button>
+
+            </div>
+
+        </footer>
+
+        }
+
+    </div>
+
+
+    <!-- Create Team Modal -->
+
+    @if (showCreateModal()) {
+
+    <div class="modal-backdrop" (click)="closeCreateModal()">
+
+        <div class="team-modal" (click)="$event.stopPropagation()">
+
+            <header class="modal-header">
+
+                <div>
+                    <h2>Create team</h2>
+
+                    <p>
+                        Create a new team in your organization.
+                    </p>
+                </div>
+
+                <button type="button" class="modal-close" [disabled]="isCreating()" (click)="closeCreateModal()"
+                    aria-label="Close">
+                    <svg lucideX [size]="18" [strokeWidth]="1.8"></svg>
+                </button>
+
+            </header>
+
+
+            <form class="team-form" [formGroup]="teamForm" (ngSubmit)="createTeam()">
+
+                <div class="form-field">
+
+                    <label for="team-name">
+                        Team name
+                    </label>
+
+                    <input id="team-name" type="text" formControlName="name" placeholder="e.g. Phoenix"
+                        maxlength="100" />
+
+                    @if (
+                    teamName.invalid &&
+                    teamName.touched
+                    ) {
+
+                    <span class="field-error">
+
+                        @if (
+                        teamName.hasError('required')
+                        ) {
+                        Team name is required.
+                        } @else {
+                        Team name must be between 1 and 100 characters.
+                        }
+
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="team-description">
+                        Description
+                    </label>
+
+                    <textarea id="team-description" formControlName="description"
+                        placeholder="Describe what this team works on..." maxlength="500" rows="4"></textarea>
+
+                </div>
+
+
+                @if (createError()) {
+
+                <div class="form-error">
+                    {{ createError() }}
+                </div>
+
+                }
+
+
+                <footer class="modal-actions">
+
+                    <button type="button" class="secondary-button" [disabled]="isCreating()"
+                        (click)="closeCreateModal()">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="primary-button" [disabled]="isCreating()">
+                        @if (isCreating()) {
+                        Creating...
+                        } @else {
+                        Create team
+                        }
+                    </button>
+
+                </footer>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    }
+
+
+    <!-- Delete Team Modal -->
+
+    @if (showDeleteModal()) {
+
+    <div class="modal-backdrop" (click)="closeDeleteModal()">
+
+        <div class="delete-modal" (click)="$event.stopPropagation()">
+
+            <div class="delete-icon">
+                <svg lucideTrash2 [size]="20" [strokeWidth]="1.8"></svg>
+            </div>
+
+            <h2>Delete team?</h2>
+
+            <p>
+                This will delete
+                <strong>{{ teamToDelete()?.name }}</strong>
+                and remove its team memberships.
+            </p>
+
+            @if (deleteError()) {
+            <div class="form-error">
+                {{ deleteError() }}
+            </div>
+            }
+
+            <footer class="modal-actions">
+
+                <button type="button" class="secondary-button" [disabled]="isDeleting()" (click)="closeDeleteModal()">
+                    Cancel
+                </button>
+
+                <button type="button" class="danger-button" [disabled]="isDeleting()" (click)="deleteTeam()">
+                    @if (isDeleting()) {
+                    Deleting...
+                    } @else {
+                    Delete team
+                    }
+                </button>
+
+            </footer>
+
+        </div>
+
+    </div>
+
+    }
+
+</section>

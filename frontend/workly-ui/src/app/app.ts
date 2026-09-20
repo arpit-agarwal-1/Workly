@@ -28,7 +28,8 @@ export class App {
   protected get isDashboardRoute(): boolean {
     return (
       this.router.url === '/dashboard' ||
-      this.router.url.startsWith('/members')
+      this.router.url.startsWith('/members') ||
+      this.router.url.startsWith('/teams')
     );
   }
 }

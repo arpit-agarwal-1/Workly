@@ -13,7 +13,8 @@
     </div>
 
     <nav class="navigation">
-      <a class="nav-item active" (click)="menu.close()" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a class="nav-item active" (click)="menu.close()" routerLink="/dashboard" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
         <svg lucideLayoutDashboard [size]="20" [strokeWidth]="1.8"></svg>
         <span>Dashboard</span>
       </a>
@@ -33,9 +34,10 @@
         <span>Calendar</span>
       </a>
 
-      <a class="nav-item" (click)="menu.close()">
-        <svg lucideUsers [size]="20" [strokeWidth]="1.8"></svg>
-        <span>Team</span>
+      <a class="nav-item" routerLink="/teams" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        (click)="menu.close()">
+        <svg lucideUsersRound [size]="20" [strokeWidth]="1.8"></svg>
+        <span>Teams</span>
       </a>
 
       <a class="nav-item" routerLink="/members" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"

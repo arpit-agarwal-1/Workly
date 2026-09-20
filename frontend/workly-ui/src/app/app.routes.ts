@@ -42,6 +42,24 @@ export const routes: Routes = [
         .then((m) => m.Members),
   },
   {
+    path: 'teams',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/teams/teams').then(
+        (m) => m.Teams
+      ),
+  },
+
+  {
+    path: 'teams/:teamId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/teams/team-detail').then(
+        (m) => m.TeamDetail
+      ),
+  },
+
+  {
     path: '**',
     redirectTo: '',
   },

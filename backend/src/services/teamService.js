@@ -4,6 +4,7 @@ const {
   Team,
   TeamMembership,
   Membership,
+  User,
 } = require('../models');
 
 function teamError() {
@@ -55,6 +56,16 @@ function alreadyTeamMemberError() {
 function invalidPaginationError() {
   const error = new Error(
     'Invalid pagination parameters.'
+  );
+  error.statusCode = 400;
+  error.code = 'VALIDATION_ERROR';
+
+  return error;
+}
+
+function invalidSearchError() {
+  const error = new Error(
+    'Invalid search parameter.'
   );
   error.statusCode = 400;
   error.code = 'VALIDATION_ERROR';
@@ -410,6 +421,174 @@ async function removeTeamMember(
   return teamMembership;
 }
 
+async function listAvailableMembers(
+  organizationId,
+  teamId,
+  page,
+  limit,
+  search
+) {
+  if (!mongoose.Types.ObjectId.isValid(teamId)) {
+    throw teamError();
+  }
+
+  const team = await Team.findOne({
+    _id: teamId,
+    organizationId,
+  }).lean();
+
+  if (!team) {
+    throw teamError();
+  }
+
+  const pagination = parsePagination(
+    page,
+    limit
+  );
+
+  const normalizedSearch =
+    typeof search === 'string'
+      ? search.trim()
+      : '';
+
+  if (normalizedSearch.length > 100) {
+    throw invalidSearchError();
+  }
+
+  /*
+   * Find users already belonging to this team.
+   *
+   * Important:
+   * We only exclude memberships for THIS team.
+   * A user belonging to another team remains eligible.
+   */
+  const existingTeamMembers =
+    await TeamMembership.find(
+      {
+        organizationId,
+        teamId,
+        status: 'active',
+      },
+      {
+        userId: 1,
+      }
+    ).lean();
+
+  const excludedUserIds =
+    existingTeamMembers.map(
+      (membership) =>
+        membership.userId
+    );
+
+  const filter = {
+    organizationId,
+    status: 'active',
+  };
+
+  if (excludedUserIds.length > 0) {
+    filter.userId = {
+      $nin: excludedUserIds,
+    };
+  }
+
+  if (normalizedSearch) {
+    const searchRegex =
+      new RegExp(
+        normalizedSearch.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          '\\$&'
+        ),
+        'i'
+      );
+
+    const matchingUsers =
+      await User.find(
+        {
+          $or: [
+            {
+              name: searchRegex,
+            },
+            {
+              email: searchRegex,
+            },
+          ],
+          status: 'active',
+        },
+        {
+          _id: 1,
+        }
+      ).lean();
+
+    const matchingUserIds =
+      matchingUsers.map(
+        (user) => user._id
+      );
+
+    if (matchingUserIds.length === 0) {
+      return {
+        items: [],
+        page: pagination.page,
+        limit: pagination.limit,
+        total: 0,
+        totalPages: 0,
+      };
+    }
+
+    filter.userId = {
+      ...(filter.userId || {}),
+      $in: matchingUserIds,
+    };
+  }
+
+  const [members, total] =
+    await Promise.all([
+      Membership.find(filter)
+        .populate({
+          path: 'userId',
+          select:
+            'name email status',
+        })
+        .sort({
+          createdAt: 1,
+        })
+        .skip(pagination.skip)
+        .limit(pagination.limit)
+        .lean(),
+
+      Membership.countDocuments(filter),
+    ]);
+
+  const items = members
+    .filter(
+      (member) =>
+        member.userId
+    )
+    .map((member) => ({
+      id: member._id,
+      user: {
+        id: member.userId._id,
+        name: member.userId.name,
+        email: member.userId.email,
+        status: member.userId.status,
+      },
+      role: member.role,
+      status: member.status,
+      createdAt: member.createdAt,
+      updatedAt: member.updatedAt,
+    }));
+
+  return {
+    items,
+    page: pagination.page,
+    limit: pagination.limit,
+    total,
+    totalPages: Math.ceil(
+      total / pagination.limit
+    ),
+  };
+}
+
+
 module.exports = {
   createTeam,
   listTeams,
@@ -419,4 +598,5 @@ module.exports = {
   addTeamMember,
   listTeamMembers,
   removeTeamMember,
+  listAvailableMembers,
 };
